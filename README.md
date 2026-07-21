@@ -11,7 +11,7 @@ Aplikasi web berbasis Django yang terintegrasi dengan Google Gemini API untuk me
 ## 🛠️ Teknologi yang Digunakan
 
 *   **Backend:** Python 3, Django 5
-*   **Frontend:** HTML5, CSS3, Vanilla JavaScript (Tanpa Framework tambahan agar ringan)
+*   **Frontend:** HTML5, CSS3, Vanilla JavaScript
 *   **AI Engine:** Google Generative AI SDK
 *   **Database:** SQLite (Bawaan Django)
 
