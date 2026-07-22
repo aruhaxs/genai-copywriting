@@ -3,70 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Copywriting Studio</title>
+    <title>AI Copywriting & Auto Post Studio</title>
     <style>
-        :root {
-            --primary: #4F46E5;
-            --primary-hover: #4338CA;
-            --bg-color: #F3F4F6;
-            --card-bg: #FFFFFF;
-            --text-main: #1F2937;
-            --text-muted: #6B7280;
-            --border: #D1D5DB;
-        }
+        :root { --primary: #4F46E5; --primary-hover: #4338CA; --bg-color: #F3F4F6; --card-bg: #FFFFFF; --text-main: #1F2937; --text-muted: #6B7280; --border: #D1D5DB; }
         body { font-family: 'Inter', 'Segoe UI', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 40px 20px; display: flex; justify-content: center; }
         .container { background: var(--card-bg); width: 100%; max-width: 800px; padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        
-        /* Pengaturan Header dan Tombol Admin */
         .header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 15px; }
         h1 { color: var(--primary); margin: 0; font-size: 28px; }
-        .btn-admin { background-color: #1F2937; color: white; padding: 10px 16px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600; transition: background 0.2s; display: flex; align-items: center; gap: 5px; }
-        .btn-admin:hover { background-color: #111827; }
-        
+        .btn-admin { background-color: #1F2937; color: white; padding: 10px 16px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600; }
         p.subtitle { color: var(--text-muted); margin-top: 0; margin-bottom: 30px; }
-        
         .selection-group { margin-bottom: 30px; }
         .selection-title { font-size: 16px; font-weight: 600; margin-bottom: 15px; border-bottom: 2px solid var(--bg-color); padding-bottom: 8px; }
-        
         .pills-container { display: flex; flex-wrap: wrap; gap: 8px; }
         .pill-label { cursor: pointer; }
         .pill-label input[type="radio"] { display: none; }
         .pill-text { display: inline-block; padding: 8px 16px; background-color: var(--bg-color); color: var(--text-muted); border-radius: 20px; font-size: 14px; font-weight: 500; transition: all 0.2s; border: 2px solid transparent; }
         .pill-label input[type="radio"]:checked + .pill-text { background-color: #EEF2FF; color: var(--primary); border-color: var(--primary); font-weight: 600; }
-        
         .dynamic-form { background-color: #F9FAFB; padding: 25px; border-radius: 12px; margin-bottom: 30px; display: none; border: 1px solid var(--border); }
         .dynamic-form.active { display: block; }
-        .form-title { font-weight: 700; color: var(--primary); margin-bottom: 15px; font-size: 16px; border-bottom: 1px dashed var(--border); padding-bottom: 10px; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-size: 13px; font-weight: 600; color: #4B5563; }
-        .form-group input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 14px; transition: border 0.2s; }
-        .form-group input:focus { outline: none; border-color: var(--primary); }
+        .form-group input, .form-group input[type="file"] { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 14px; background: white; }
+        .btn-submit { background-color: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
         
-        .btn-submit { background-color: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
-        .btn-submit:hover { background-color: var(--primary-hover); }
-        
-        .result-box { margin-top: 30px; padding: 25px; background-color: #EEF2FF; border-radius: 12px; border-left: 6px solid var(--primary); white-space: pre-wrap; line-height: 1.6; font-size: 15px; color: #111827; }
+        /* Area Editor & Post */
+        .preview-box { margin-top: 30px; padding: 25px; background-color: #EEF2FF; border-radius: 12px; border: 1px solid #C7D2FE; }
+        .preview-image { width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; margin-bottom: 15px; background: #000; }
+        .edit-caption { width: 100%; min-height: 250px; padding: 15px; border: 1px solid #A5B4FC; border-radius: 8px; box-sizing: border-box; font-family: inherit; line-height: 1.5; resize: vertical; }
+        .btn-ig { background-color: #E1306C; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 8px;}
+        .btn-ig:hover { background-color: #C13584; }
         .error-box { margin-top: 30px; padding: 20px; background-color: #FEF2F2; color: #DC2626; border-radius: 8px; border-left: 6px solid #DC2626; }
+        .success-box { margin-top: 30px; padding: 20px; background-color: #ECFDF5; color: #059669; border-radius: 8px; border-left: 6px solid #10B981; }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header dengan tombol menu Admin -->
         <div class="header-section">
-            <h1>✨ AI Copywriting Studio</h1>
-            <!-- Link ini langsung mengarah ke halaman pengeditan gaya di database -->
-            <a href="/admin/caption_app/gayacopywriting/" target="_blank" class="btn-admin">
-                ⚙️ Kelola Gaya Penulisan
-            </a>
+            <h1>✨ Studio AI & Auto-Post IG</h1>
+            <a href="/admin/caption_app/gayacopywriting/" target="_blank" class="btn-admin">⚙️ Kelola Gaya</a>
         </div>
-        <p class="subtitle">Pilih bidang, isi detail spesifiknya, dan biarkan AI merangkai caption profesional.</p>
+        <p class="subtitle">Buat caption AI dan langsung luncurkan postingannya ke Instagram.</p>
 
-        <form method="POST">
+        <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
+            <input type="hidden" name="action" value="generate">
             
-            <!-- 1. Pilihan Bidang -->
             <div class="selection-group">
-                <div class="selection-title">1. Pilih Bidang Usaha</div>
+                <div class="selection-title">1. Unggah Gambar Postingan</div>
+                <div class="form-group">
+                    <input type="file" name="gambar" accept="image/png, image/jpeg, image/jpg" required>
+                </div>
+            </div>
+
+            <div class="selection-group">
+                <div class="selection-title">2. Pilih Bidang Usaha</div>
                 <div class="pills-container">
                     <label class="pill-label"><input type="radio" name="bidang" value="Kuliner" onchange="showForm('f-kuliner')" required><span class="pill-text">🍔 Kuliner</span></label>
                     <label class="pill-label"><input type="radio" name="bidang" value="Fashion" onchange="showForm('f-fashion')"><span class="pill-text">👗 Fashion</span></label>
@@ -91,7 +81,6 @@
                 </div>
             </div>
 
-            <!-- 2. WADAH FORM DINAMIS -->
             <div id="f-kuliner" class="dynamic-form"><div class="form-title">Detail Info - Kuliner</div>
                 <div class="form-group"><label>Nama Resto/Cafe</label><input type="text" name="nama_usaha" disabled></div>
                 <div class="form-group"><label>Menu Spesial/Promo</label><input type="text" name="menu_promo" placeholder="Contoh: Paket Ayam Geprek diskon 20%" disabled></div>
@@ -232,54 +221,58 @@
                 <div class="form-group"><label>Kontak Portofolio</label><input type="text" name="kontak" disabled></div>
             </div>
 
-            <!-- 3. Pilihan Gaya Copywriting dari Database -->
             <div class="selection-group">
-                <div class="selection-title">2. Pilih Gaya Penulisan</div>
+                <div class="selection-title">3. Pilih Gaya Penulisan</div>
                 <div class="pills-container">
-                    {% if daftar_gaya %}
-                        {% for gaya in daftar_gaya %}
-                            <label class="pill-label">
-                                <input type="radio" name="gaya" value="{{ gaya.id }}" required>
-                                <span class="pill-text">{{ gaya.nama }}</span>
-                            </label>
-                        {% endfor %}
-                    {% else %}
-                        <p style="color: #DC2626; font-size: 14px; background: #FEF2F2; padding: 10px; border-radius: 6px; border-left: 4px solid #DC2626;">
-                            Belum ada gaya penulisan. Klik tombol "Kelola Gaya Penulisan" di atas untuk menambahkannya.
-                        </p>
-                    {% endif %}
+                    {% for gaya in daftar_gaya %}
+                        <label class="pill-label"><input type="radio" name="gaya" value="{{ gaya.id }}" required><span class="pill-text">{{ gaya.nama }}</span></label>
+                    {% endfor %}
                 </div>
             </div>
 
-            <button type="submit" class="btn-submit">Generate Caption 🚀</button>
+            <button type="submit" class="btn-submit">🪄 Generate Caption</button>
         </form>
 
-        {% if error %}
-            <div class="error-box">{{ error }}</div>
+        {% if error %}<div class="error-box">{{ error }}</div>{% endif %}
+        {% if error_ig %}
+            <div class="error-box">
+                <b>Gagal Posting ke IG:</b><br>{{ error_ig }}<br><br>
+                <i>(Ingat: Saat dites di localhost/komputer lokal, IG tidak bisa mengunduh gambar. Upload webmu ke PythonAnywhere terlebih dahulu!)</i>
+            </div>
         {% endif %}
+        {% if success_msg %}<div class="success-box">{{ success_msg }}</div>{% endif %}
 
-        {% if hasil_caption %}
-            <div class="result-box">{{ hasil_caption }}</div>
+        {% if hasil_caption and image_url %}
+        <div class="preview-box">
+            <h3 style="margin-top:0; color:var(--primary);">Pratinjau Postingan</h3>
+            <img src="{{ image_url }}" alt="Preview" class="preview-image">
+            
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="post_ig">
+                <input type="hidden" name="image_url" value="{{ image_url }}">
+                
+                <p style="font-size: 13px; font-weight: 600; color: #4B5563; margin-bottom: 5px;">Edit Caption (Jika Perlu):</p>
+                <textarea name="final_caption" class="edit-caption" required>{{ hasil_caption }}</textarea>
+                
+                <button type="submit" class="btn-ig">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                    Post ke Instagram Sekarang
+                </button>
+            </form>
+        </div>
         {% endif %}
     </div>
 
-    <!-- Script JavaScript untuk mengatur Form Dinamis -->
     <script>
         function showForm(formId) {
-            // Sembunyikan semua form
             const forms = document.querySelectorAll('.dynamic-form');
             forms.forEach(form => form.classList.remove('active'));
-            
-            // Nonaktifkan semua input agar data yang disembunyikan tidak ikut terkirim
             const allInputs = document.querySelectorAll('.dynamic-form input');
             allInputs.forEach(input => input.disabled = true);
-
-            // Tampilkan form yang dipilih user
             const selectedForm = document.getElementById(formId);
             if(selectedForm) {
                 selectedForm.classList.add('active');
-                
-                // Aktifkan input HANYA di dalam form yang tampil
                 const activeInputs = selectedForm.querySelectorAll('input');
                 activeInputs.forEach(input => input.disabled = false);
             }
