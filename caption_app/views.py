@@ -1,25 +1,24 @@
 import os
+import time
 import requests
+import urllib.parse
 import google.generativeai as genai
 from django.shortcuts import render
-from django.conf import settings
 from django.core.files.storage import FileSystemStorage
-from .models import GayaCopywriting
-from dotenv import load_dotenv
-
-load_dotenv(os.path.join(settings.BASE_DIR, '.env'))
-
-# Kredensial API
-api_key = os.getenv("GEMINI_API_KEY")
-ig_access_token = os.getenv("IG_ACCESS_TOKEN")
-ig_account_id = os.getenv("IG_ACCOUNT_ID")
-
-if api_key:
-    genai.configure(api_key=api_key)
+from django.utils.text import get_valid_filename
+from .models import GayaCopywriting, PengaturanAPI
 
 def generate_caption(request):
     daftar_gaya = GayaCopywriting.objects.all()
     context = {'daftar_gaya': daftar_gaya}
+    
+    # 1. AMBIL PENGATURAN DARI DATABASE SECARA OTOMATIS
+    # Mengambil baris pertama dari pengaturan yang diisi lewat Panel Admin
+    pengaturan = PengaturanAPI.objects.first()
+    
+    # Mengaktifkan Gemini API jika kuncinya sudah ada di Admin
+    if pengaturan and pengaturan.gemini_api_key:
+        genai.configure(api_key=pengaturan.gemini_api_key)
 
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -27,46 +26,59 @@ def generate_caption(request):
         # AKSI 1: POSTING KE INSTAGRAM
         if action == 'post_ig':
             final_caption = request.POST.get('final_caption')
-            image_url = request.POST.get('image_url')
+            raw_image_url = request.POST.get('image_url')
             
-            # Instagram API Endpoint
+            # Membersihkan URL
+            filename = raw_image_url.split('/')[-1].split('?')[0]
+            safe_filename = urllib.parse.quote(filename)
+            timestamp = int(time.time())
+            
+            image_url = f"https://aruha.pythonanywhere.com/media/{safe_filename}?v={timestamp}"
             graph_url = 'https://graph.facebook.com/v19.0'
             
             try:
-                if not ig_access_token or not ig_account_id:
-                    raise ValueError("Token Instagram atau ID Akun belum diatur di file .env")
+                # Mengecek apakah data di Panel Admin sudah diisi atau masih kosong
+                if not pengaturan or not pengaturan.ig_access_token or not pengaturan.ig_account_id:
+                    raise ValueError("Token Instagram atau ID Akun belum diisi di Panel Admin!")
 
-                # Step 1: Buat Media Container di server IG
+                ig_access_token = pengaturan.ig_access_token
+                ig_account_id = pengaturan.ig_account_id
+
+                # Step 1: Buat Media Container
                 container_payload = {
                     'image_url': image_url,
                     'caption': final_caption,
                     'access_token': ig_access_token
                 }
-                container_req = requests.post(f"{graph_url}/{ig_account_id}/media", data=container_payload)
+                
+                container_req = requests.post(f"{graph_url}/{ig_account_id}/media", data=container_payload, timeout=20)
                 container_res = container_req.json()
                 
                 if 'error' in container_res:
-                    raise Exception(f"Gagal membuat kontainer IG: {container_res['error']['message']}")
+                    raise Exception(f"Gagal membuat kontainer IG: {container_res['error']['message']} | URL yg dikirim: {image_url}")
                 
                 creation_id = container_res['id']
                 
-                # Step 2: Publikasikan Media Container tersebut
+                # Step 2: Publikasikan Media
                 publish_payload = {
                     'creation_id': creation_id,
                     'access_token': ig_access_token
                 }
-                publish_req = requests.post(f"{graph_url}/{ig_account_id}/media_publish", data=publish_payload)
+                publish_req = requests.post(f"{graph_url}/{ig_account_id}/media_publish", data=publish_payload, timeout=20)
                 publish_res = publish_req.json()
                 
                 if 'error' in publish_res:
                     raise Exception(f"Gagal mempublikasikan ke IG: {publish_res['error']['message']}")
                 
                 context['success_msg'] = "🎉 Sukses! Postingan berhasil diunggah ke Instagram!"
+            except requests.exceptions.Timeout:
+                context['error_ig'] = "Koneksi Timeout. Server terlalu lambat merespons permintaan Instagram."
+                context['hasil_caption'] = final_caption
+                context['image_url'] = raw_image_url
             except Exception as e:
                 context['error_ig'] = str(e)
                 context['hasil_caption'] = final_caption
-                context['image_url'] = image_url
-
+                context['image_url'] = raw_image_url
 
         # AKSI 2: GENERATE CAPTION & UPLOAD GAMBAR
         elif action == 'generate':
@@ -75,35 +87,42 @@ def generate_caption(request):
             gambar = request.FILES.get('gambar')
 
             if bidang and gaya_id and gambar:
-                try:
-                    # Simpan gambar ke dalam folder /media/
-                    fs = FileSystemStorage()
-                    filename = fs.save(gambar.name, gambar)
-                    
-                    # Membuat URL gambar (Catatan: Ini butuh domain publik agar IG bisa membacanya)
-                    uploaded_file_url = request.build_absolute_uri(fs.url(filename))
-                    context['image_url'] = uploaded_file_url
+                allowed_extensions = ['.jpg', '.jpeg', '.png']
+                ext = os.path.splitext(gambar.name)[1].lower()
+                
+                if ext not in allowed_extensions:
+                    context['error'] = f"Gagal: Format gambar '{ext}' tidak diterima Instagram. Harap unggah foto berekstensi .jpg, .jpeg, atau .png!"
+                else:
+                    try:
+                        # Cegah AI berjalan jika kunci belum dipasang di Admin
+                        if not pengaturan or not pengaturan.gemini_api_key:
+                            raise Exception("API Key Gemini belum dimasukkan di Panel Admin!")
 
-                    # Ambil instruksi gaya
-                    gaya_terpilih = GayaCopywriting.objects.get(id=gaya_id)
+                        fs = FileSystemStorage()
+                        safe_name = get_valid_filename(gambar.name)
+                        filename = fs.save(safe_name, gambar)
+                        
+                        uploaded_file_url = request.build_absolute_uri(fs.url(filename))
+                        context['image_url'] = uploaded_file_url
 
-                    detail_info = ""
-                    for key, value in request.POST.items():
-                        if key not in ['csrfmiddlewaretoken', 'bidang', 'gaya', 'action'] and value.strip() != "":
-                            label = key.replace('_', ' ').title()
-                            detail_info += f"- {label}: {value}\n"
+                        gaya_terpilih = GayaCopywriting.objects.get(id=gaya_id)
 
-                    # Panggil AI
-                    model = genai.GenerativeModel('gemini-flash-latest')
-                    prompt = f"Sebagai seorang copywriter, buat caption Instagram menarik untuk bisnis {bidang}.\n\n"
-                    prompt += f"Detail info:\n{detail_info}\n\nInstruksi Gaya:\n{gaya_terpilih.prompt}\n\n"
-                    prompt += "Berikan SATU hasil akhir caption saja (tidak perlu alternatif). Jangan pakai teks struktur [HEADER]. Berikan call-to-action dan hashtag."
-                    
-                    response = model.generate_content(prompt)
-                    context['hasil_caption'] = response.text
+                        detail_info = ""
+                        for key, value in request.POST.items():
+                            if key not in ['csrfmiddlewaretoken', 'bidang', 'gaya', 'action'] and value.strip() != "":
+                                label = key.replace('_', ' ').title()
+                                detail_info += f"- {label}: {value}\n"
 
-                except Exception as e:
-                    context['error'] = f"Terjadi kesalahan AI: {str(e)}"
+                        model = genai.GenerativeModel('gemini-flash-latest')
+                        prompt = f"Sebagai seorang copywriter, buat caption Instagram menarik untuk bisnis {bidang}.\n\n"
+                        prompt += f"Detail info:\n{detail_info}\n\nInstruksi Gaya:\n{gaya_terpilih.prompt}\n\n"
+                        prompt += "Berikan SATU hasil akhir caption saja (tidak perlu alternatif). Jangan pakai teks struktur [HEADER]. Berikan call-to-action dan hashtag."
+                        
+                        response = model.generate_content(prompt)
+                        context['hasil_caption'] = response.text
+
+                    except Exception as e:
+                        context['error'] = f"Terjadi kesalahan AI: {str(e)}"
             else:
                 context['error'] = "Mohon lengkapi pilihan bidang, gaya penulisan, dan jangan lupa unggah gambar!"
 
