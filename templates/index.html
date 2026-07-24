@@ -5,33 +5,201 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Copywriting & Auto Post Studio</title>
     <style>
-        :root { --primary: #4F46E5; --primary-hover: #4338CA; --bg-color: #F3F4F6; --card-bg: #FFFFFF; --text-main: #1F2937; --text-muted: #6B7280; --border: #D1D5DB; }
-        body { font-family: 'Inter', 'Segoe UI', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 40px 20px; display: flex; justify-content: center; }
-        .container { background: var(--card-bg); width: 100%; max-width: 800px; padding: 40px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        .header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 15px; }
+        :root { 
+            --primary: #4F46E5; 
+            --primary-hover: #4338CA; 
+            --bg-color: #F3F4F6; 
+            --card-bg: #FFFFFF; 
+            --text-main: #1F2937; 
+            --text-muted: #6B7280; 
+            --border: #D1D5DB; 
+        }
+
+        body { 
+            font-family: 'Inter', 'Segoe UI', sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 40px 20px; 
+            display: flex; 
+            justify-content: center; 
+        }
+
+        .container { 
+            background: var(--card-bg); 
+            width: 100%; 
+            max-width: 800px; 
+            padding: 40px; 
+            border-radius: 16px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
+        }
+
+        .header-section { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 10px; 
+            flex-wrap: wrap; 
+            gap: 15px; 
+        }
+
         h1 { color: var(--primary); margin: 0; font-size: 28px; }
-        .btn-admin { background-color: #1F2937; color: white; padding: 10px 16px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600; }
         p.subtitle { color: var(--text-muted); margin-top: 0; margin-bottom: 30px; }
+
+        .btn-admin { 
+            background-color: #1F2937; 
+            color: white; 
+            padding: 10px 16px; 
+            border-radius: 8px; 
+            text-decoration: none; 
+            font-size: 14px; 
+            font-weight: 600; 
+            transition: background 0.2s;
+        }
+        .btn-admin:hover { background-color: #111827; }
+
         .selection-group { margin-bottom: 30px; }
-        .selection-title { font-size: 16px; font-weight: 600; margin-bottom: 15px; border-bottom: 2px solid var(--bg-color); padding-bottom: 8px; }
+        .selection-title { 
+            font-size: 16px; 
+            font-weight: 600; 
+            margin-bottom: 15px; 
+            border-bottom: 2px solid var(--bg-color); 
+            padding-bottom: 8px; 
+        }
+
         .pills-container { display: flex; flex-wrap: wrap; gap: 8px; }
         .pill-label { cursor: pointer; }
         .pill-label input[type="radio"] { display: none; }
-        .pill-text { display: inline-block; padding: 8px 16px; background-color: var(--bg-color); color: var(--text-muted); border-radius: 20px; font-size: 14px; font-weight: 500; transition: all 0.2s; border: 2px solid transparent; }
-        .pill-label input[type="radio"]:checked + .pill-text { background-color: #EEF2FF; color: var(--primary); border-color: var(--primary); font-weight: 600; }
-        .dynamic-form { background-color: #F9FAFB; padding: 25px; border-radius: 12px; margin-bottom: 30px; display: none; border: 1px solid var(--border); }
+        .pill-text { 
+            display: inline-block; 
+            padding: 8px 16px; 
+            background-color: var(--bg-color); 
+            color: var(--text-muted); 
+            border-radius: 20px; 
+            font-size: 14px; 
+            font-weight: 500; 
+            transition: all 0.2s; 
+            border: 2px solid transparent; 
+        }
+        .pill-label input[type="radio"]:checked + .pill-text { 
+            background-color: #EEF2FF; 
+            color: var(--primary); 
+            border-color: var(--primary); 
+            font-weight: 600; 
+        }
+
+        .dynamic-form { 
+            background-color: #F9FAFB; 
+            padding: 25px; 
+            border-radius: 12px; 
+            margin-bottom: 30px; 
+            display: none; 
+            border: 1px solid var(--border); 
+        }
         .dynamic-form.active { display: block; }
+        .form-title { font-weight: 700; margin-bottom: 15px; color: var(--primary); font-size: 15px; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-size: 13px; font-weight: 600; color: #4B5563; }
-        .form-group input, .form-group input[type="file"] { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 14px; background: white; }
-        .btn-submit { background-color: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
-        
-        /* Area Editor & Post */
-        .preview-box { margin-top: 30px; padding: 25px; background-color: #EEF2FF; border-radius: 12px; border: 1px solid #C7D2FE; }
-        .preview-image { width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; margin-bottom: 15px; background: #000; }
-        .edit-caption { width: 100%; min-height: 250px; padding: 15px; border: 1px solid #A5B4FC; border-radius: 8px; box-sizing: border-box; font-family: inherit; line-height: 1.5; resize: vertical; }
-        .btn-ig { background-color: #E1306C; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; display: flex; justify-content: center; align-items: center; gap: 8px;}
+        .form-group input { 
+            width: 100%; 
+            padding: 10px; 
+            border: 1px solid var(--border); 
+            border-radius: 6px; 
+            box-sizing: border-box; 
+            font-family: inherit; 
+            font-size: 14px; 
+            background: white; 
+        }
+
+        .btn-submit { 
+            background-color: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 15px; 
+            width: 100%; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: background 0.2s;
+        }
+        .btn-submit:hover { background-color: var(--primary-hover); }
+
+        /* Area Preview & Actions */
+        .preview-box { 
+            margin-top: 30px; 
+            padding: 25px; 
+            background-color: #EEF2FF; 
+            border-radius: 12px; 
+            border: 1px solid #C7D2FE; 
+        }
+        .preview-image { 
+            width: 100%; 
+            max-height: 400px; 
+            object-fit: contain; 
+            border-radius: 8px; 
+            margin-bottom: 15px; 
+            background: #000; 
+        }
+        .edit-caption { 
+            width: 100%; 
+            min-height: 200px; 
+            padding: 15px; 
+            border: 1px solid #A5B4FC; 
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            font-family: inherit; 
+            line-height: 1.5; 
+            resize: vertical; 
+            background: #FFFFFF;
+            font-size: 14px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn-ig { 
+            flex: 2;
+            min-width: 200px;
+            background-color: #E1306C; 
+            color: white; 
+            border: none; 
+            padding: 14px; 
+            border-radius: 8px; 
+            font-size: 15px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 8px;
+            transition: background 0.2s;
+        }
         .btn-ig:hover { background-color: #C13584; }
+
+        .btn-regenerate {
+            flex: 1;
+            min-width: 160px;
+            background-color: #FFFFFF;
+            color: #374151;
+            border: 1px solid #D1D5DB;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        .btn-regenerate:hover { background-color: #F3F4F6; border-color: #9CA3AF; }
+
         .error-box { margin-top: 30px; padding: 20px; background-color: #FEF2F2; color: #DC2626; border-radius: 8px; border-left: 6px solid #DC2626; }
         .success-box { margin-top: 30px; padding: 20px; background-color: #ECFDF5; color: #059669; border-radius: 8px; border-left: 6px solid #10B981; }
     </style>
@@ -44,7 +212,8 @@
         </div>
         <p class="subtitle">Buat caption AI dan langsung luncurkan postingannya ke Instagram.</p>
 
-        <form method="POST" enctype="multipart/form-data">
+        <!-- Form Utama Generate Caption -->
+        <form method="POST" enctype="multipart/form-data" id="main-form">
             {% csrf_token %}
             <input type="hidden" name="action" value="generate">
             
@@ -81,6 +250,7 @@
                 </div>
             </div>
 
+            <!-- Form Dinamis Sesuai Bidang Usaha -->
             <div id="f-kuliner" class="dynamic-form"><div class="form-title">Detail Info - Kuliner</div>
                 <div class="form-group"><label>Nama Resto/Cafe</label><input type="text" name="nama_usaha" disabled></div>
                 <div class="form-group"><label>Menu Spesial/Promo</label><input type="text" name="menu_promo" placeholder="Contoh: Paket Ayam Geprek diskon 20%" disabled></div>
@@ -225,7 +395,10 @@
                 <div class="selection-title">3. Pilih Gaya Penulisan</div>
                 <div class="pills-container">
                     {% for gaya in daftar_gaya %}
-                        <label class="pill-label"><input type="radio" name="gaya" value="{{ gaya.id }}" required><span class="pill-text">{{ gaya.nama }}</span></label>
+                        <label class="pill-label">
+                            <input type="radio" name="gaya" value="{{ gaya.id }}" required {% if request.POST.gaya == gaya.id|stringformat:"i" %}checked{% endif %}>
+                            <span class="pill-text">{{ gaya.nama }}</span>
+                        </label>
                     {% endfor %}
                 </div>
             </div>
@@ -233,32 +406,55 @@
             <button type="submit" class="btn-submit">🪄 Generate Caption</button>
         </form>
 
-        {% if error %}<div class="error-box">{{ error }}</div>{% endif %}
+        <!-- Notifikasi Status -->
+        {% if error %}
+            <div class="error-box">{{ error }}</div>
+        {% endif %}
+        
         {% if error_ig %}
             <div class="error-box">
                 <b>Gagal Posting ke IG:</b><br>{{ error_ig }}<br><br>
                 <i>(Ingat: Saat dites di localhost/komputer lokal, IG tidak bisa mengunduh gambar. Upload webmu ke PythonAnywhere terlebih dahulu!)</i>
             </div>
         {% endif %}
-        {% if success_msg %}<div class="success-box">{{ success_msg }}</div>{% endif %}
+        
+        {% if success_msg %}
+            <div class="success-box">{{ success_msg }}</div>
+        {% endif %}
 
+        <!-- Area Preview Hasil & Aksi Lanjutan -->
         {% if hasil_caption and image_url %}
         <div class="preview-box">
             <h3 style="margin-top:0; color:var(--primary);">Pratinjau Postingan</h3>
             <img src="{{ image_url }}" alt="Preview" class="preview-image">
             
-            <form method="POST">
+            <form method="POST" id="action-form">
                 {% csrf_token %}
-                <input type="hidden" name="action" value="post_ig">
+                <!-- Transfer data penting untuk aksi lanjutan -->
                 <input type="hidden" name="image_url" value="{{ image_url }}">
+                <input type="hidden" name="bidang" value="{{ request.POST.bidang }}">
+                <input type="hidden" name="gaya" value="{{ request.POST.gaya }}">
+
+                <!-- Menyimpan parameter detail input agar ikut terikirim saat regenerate -->
+                {% for key, value in request.POST.items %}
+                    {% if key not in 'csrfmiddlewaretoken,bidang,gaya,action,image_url,final_caption,gambar' %}
+                        <input type="hidden" name="{{ key }}" value="{{ value }}">
+                    {% endif %}
+                {% endfor %}
                 
                 <p style="font-size: 13px; font-weight: 600; color: #4B5563; margin-bottom: 5px;">Edit Caption (Jika Perlu):</p>
                 <textarea name="final_caption" class="edit-caption" required>{{ hasil_caption }}</textarea>
                 
-                <button type="submit" class="btn-ig">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                    Post ke Instagram Sekarang
-                </button>
+                <div class="action-buttons">
+                    <button type="submit" name="action" value="post_ig" class="btn-ig">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                        Post ke Instagram Sekarang
+                    </button>
+
+                    <button type="submit" name="action" value="regenerate" class="btn-regenerate">
+                        🔄 Generate Ulang
+                    </button>
+                </div>
             </form>
         </div>
         {% endif %}
@@ -268,8 +464,10 @@
         function showForm(formId) {
             const forms = document.querySelectorAll('.dynamic-form');
             forms.forEach(form => form.classList.remove('active'));
+            
             const allInputs = document.querySelectorAll('.dynamic-form input');
             allInputs.forEach(input => input.disabled = true);
+            
             const selectedForm = document.getElementById(formId);
             if(selectedForm) {
                 selectedForm.classList.add('active');
@@ -277,6 +475,14 @@
                 activeInputs.forEach(input => input.disabled = false);
             }
         }
+
+        // Pertahankan form aktif jika halaman di-refresh / selesai submit
+        document.addEventListener("DOMContentLoaded", function() {
+            const selectedBidang = document.querySelector('input[name="bidang"]:checked');
+            if (selectedBidang) {
+                selectedBidang.dispatchEvent(new Event('change'));
+            }
+        });
     </script>
 </body>
 </html>
