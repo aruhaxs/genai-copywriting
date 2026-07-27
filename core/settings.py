@@ -87,7 +87,11 @@ USE_I18N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = 'static/'
+# PERBAIKAN: Gunakan garis miring di awal '/static/'
+STATIC_URL = '/static/'
+
+# TAMBAHAN: Menentukan lokasi pengumpulan file statis untuk production
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Pengaturan Media (Untuk menyimpan gambar yang diunggah)
 MEDIA_URL = '/media/'
