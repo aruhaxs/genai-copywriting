@@ -191,7 +191,7 @@ def generate_caption(request):
                     # Mengumpulkan detail dinamis dari form
                     detail_info = ""
                     for key, value in request.POST.items():
-                        if key not in ['csrfmiddlewaretoken', 'bidang', 'gaya', 'action', 'image_url', 'final_caption'] and value.strip() != "":
+                        if key not in ['csrfmiddlewaretoken', 'bidang', 'gaya', 'action', 'image_url', 'final_caption', 'gambar'] and value.strip() != "":
                             label = key.replace('_', ' ').title()
                             detail_info += f"- {label}: {value}\n"
 

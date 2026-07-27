@@ -119,7 +119,7 @@
             border-radius: 4px;
         }
 
-        /* Styling Input File Custom */
+        /* Styling Input File Custom (Diperbaiki agar tidak keluar form) */
         input[type="file"] {
             display: block;
             width: 100%;
@@ -130,6 +130,7 @@
             color: #64748b;
             font-family: inherit;
             cursor: pointer;
+            box-sizing: border-box; /* PERBAIKAN: Menahan padding agar tidak melebar */
             transition: all 0.3s;
         }
         input[type="file"]:hover { border-color: var(--primary); background-color: #e0e7ff; }
@@ -285,28 +286,57 @@
             box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
         }
 
+        /* Action Buttons Group (Regenerate & Post IG) */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
         .btn-ig { 
             background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
             color: white; 
             border: none; 
             padding: 16px; 
-            width: 100%; 
             border-radius: 12px; 
             font-size: 16px; 
             font-weight: 700; 
             cursor: pointer; 
-            margin-top: 20px; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
             gap: 10px;
             transition: all 0.3s;
             box-shadow: 0 4px 12px rgba(220, 39, 67, 0.3);
+            flex: 1;
         }
         
         .btn-ig:hover { 
             transform: translateY(-2px);
             box-shadow: 0 6px 16px rgba(220, 39, 67, 0.4);
+        }
+
+        .btn-regenerate {
+            background: #f1f5f9;
+            color: #475569;
+            border: 2px solid #cbd5e1;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            flex: 1;
+        }
+
+        .btn-regenerate:hover {
+            background: #e2e8f0;
+            border-color: #94a3b8;
+            transform: translateY(-2px);
         }
 
         /* Alerts */
@@ -329,6 +359,7 @@
             .selection-group { padding: 16px; }
             .pill-text { padding: 8px 14px; font-size: 13px; }
             .preview-box { padding: 20px; }
+            .action-buttons { flex-direction: column; }
         }
     </style>
 </head>
@@ -350,173 +381,175 @@
             
             <div class="selection-group">
                 <div class="selection-title">1. Unggah Gambar Postingan</div>
-                <input type="file" name="gambar" accept="image/png, image/jpeg, image/jpg" required>
+                <!-- Gambar hanya di-required jika belum ada image_url di context -->
+                <input type="file" name="gambar" accept="image/png, image/jpeg, image/jpg" {% if not image_url %}required{% endif %}>
             </div>
 
             <div class="selection-group">
                 <div class="selection-title">2. Pilih Bidang Usaha</div>
                 <div class="pills-container">
-                    <label class="pill-label"><input type="radio" name="bidang" value="Kuliner" onchange="showForm('f-kuliner')" required><span class="pill-text">🍔 Kuliner</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Fashion" onchange="showForm('f-fashion')"><span class="pill-text">👗 Fashion</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Skincare & Kosmetik" onchange="showForm('f-skincare')"><span class="pill-text">💄 Skincare</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Klinik Kesehatan" onchange="showForm('f-klinik')"><span class="pill-text">🏥 Klinik</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Salon & Barbershop" onchange="showForm('f-salon')"><span class="pill-text">💇 Salon/Barber</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Properti" onchange="showForm('f-properti')"><span class="pill-text">🏠 Properti</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Dealer & Bengkel" onchange="showForm('f-otomotif')"><span class="pill-text">🚗 Otomotif</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Jasa Web & Digital" onchange="showForm('f-digital')"><span class="pill-text">💻 Agensi Digital</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Kursus & Pelatihan" onchange="showForm('f-kursus')"><span class="pill-text">🎓 Kursus</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Toko Online / UMKM" onchange="showForm('f-umkm')"><span class="pill-text">🛍️ Olshop/UMKM</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Budidaya & Pertanian" onchange="showForm('f-agro')"><span class="pill-text">🐟 Agrobisnis</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Pet Shop" onchange="showForm('f-pet')"><span class="pill-text">🐶 Pet Shop</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Fotografi & Video" onchange="showForm('f-foto')"><span class="pill-text">📷 Fotografi</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Gym & Fitness" onchange="showForm('f-gym')"><span class="pill-text">🏋️ Gym</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Travel & Hotel" onchange="showForm('f-travel')"><span class="pill-text">✈️ Travel/Hotel</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Bank & Asuransi" onchange="showForm('f-finansial')"><span class="pill-text">🏦 Finansial</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Logistik & Ekspedisi" onchange="showForm('f-logistik')"><span class="pill-text">📦 Ekspedisi</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Home Service" onchange="showForm('f-homeservice')"><span class="pill-text">🛠️ Home Service</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Retail" onchange="showForm('f-retail')"><span class="pill-text">🛒 Retail</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Event Organizer" onchange="showForm('f-eo')"><span class="pill-text">🎉 EO</span></label>
+                    <!-- Value 'checked' ditambahkan agar memori form tidak hilang setelah disubmit -->
+                    <label class="pill-label"><input type="radio" name="bidang" value="Kuliner" onchange="showForm('f-kuliner')" {% if request.POST.bidang == 'Kuliner' %}checked{% endif %} required><span class="pill-text">🍔 Kuliner</span></label>
+                    <label class="pill-label"><input type="radio" name="bidang" value="Fashion" onchange="showForm('f-fashion')" {% if request.POST.bidang == 'Fashion' %}checked{% endif %}><span class="pill-text">👗 Fashion</span></label>
+                    <label class="pill-label"><input type="radio" name="bidang" value="Skincare & Kosmetik" onchange="showForm('f-skincare')" {% if request.POST.bidang == 'Skincare & Kosmetik' %}checked{% endif %}><span class="pill-text">💄 Skincare</span></label>
+                    <label class="pill-label"><input type="radio" name="bidang" value="Klinik Kesehatan" onchange="showForm('f-klinik')" {% if request.POST.bidang == 'Klinik Kesehatan' %}checked{% endif %}><span class="pill-text">🏥 Klinik</span></label>
+                    <label class="pill-label"><input type="radio" name="bidang" value="Salon & Barbershop" onchange="showForm('f-salon')" {% if request.POST.bidang == 'Salon & Barbershop' %}checked{% endif %}><span class="pill-text">💇 Salon/Barber</span></label>
+                    <label class="pill-label"><input type="radio" name="bidang" value="Properti" onchange="showForm('f-properti')" {% if request.POST.bidang == 'Properti' %}checked{% endif %}><span class="pill-text">🏠 Properti</span></label>
+                    <label class="pill-label"><input type="radio" name="bidang" value="Dealer & Bengkel" onchange="showForm('f-otomotif')" {% if request.POST.bidang == 'Dealer & Bengkel' %}checked{% endif %}><span class="pill-text">🚗 Otomotif</span></label>
+                    <label class="pill-label"><input type="radio" name="bidang" value="Jasa Web & Digital" onchange="showForm('f-digital')" {% if request.POST.bidang == 'Jasa Web & Digital' %}checked{% endif %}><span class="pill-text">💻 Agensi Digital</span></label>
+                    <label class="pill-label"><input type="radio" name="bidang" value="Kursus & Pelatihan" onchange="showForm('f-kursus')" {% if request.POST.bidang == 'Kursus & Pelatihan' %}checked{% endif %}><span class="pill-text">🎓 Kursus</span></label>
+                    <label class="pill-label"><input type="radio" name="bidang" value="Toko Online / UMKM" onchange="showForm('f-umkm')" {% if request.POST.bidang == 'Toko Online / UMKM' %}checked{% endif %}><span class="pill-text">🛍️ Olshop/UMKM</span></label>
+                    <label class="pill-label"><input type="radio" name="bidang" value="Budidaya & Pertanian" onchange="showForm('f-agro')" {% if request.POST.bidang == 'Budidaya & Pertanian' %}checked{% endif %}><span class="pill-text">🐟 Agrobisnis</span></label>
+                    <label class="pill-label"><input type="radio" name="bidang" value="Pet Shop" onchange="showForm('f-pet')" {% if request.POST.bidang == 'Pet Shop' %}checked{% endif %}><span class="pill-text">🐶 Pet Shop</span></label>
+                    <label class="pill-label"><input type="radio" name="bidang" value="Fotografi & Video" onchange="showForm('f-foto')" {% if request.POST.bidang == 'Fotografi & Video' %}checked{% endif %}><span class="pill-text">📷 Fotografi</span></label>
+                    <label class="pill-label"><input type="radio" name="bidang" value="Gym & Fitness" onchange="showForm('f-gym')" {% if request.POST.bidang == 'Gym & Fitness' %}checked{% endif %}><span class="pill-text">🏋️ Gym</span></label>
+                    <label class="pill-label"><input type="radio" name="bidang" value="Travel & Hotel" onchange="showForm('f-travel')" {% if request.POST.bidang == 'Travel & Hotel' %}checked{% endif %}><span class="pill-text">✈️ Travel/Hotel</span></label>
+                    <label class="pill-label"><input type="radio" name="bidang" value="Bank & Asuransi" onchange="showForm('f-finansial')" {% if request.POST.bidang == 'Bank & Asuransi' %}checked{% endif %}><span class="pill-text">🏦 Finansial</span></label>
+                    <label class="pill-label"><input type="radio" name="bidang" value="Logistik & Ekspedisi" onchange="showForm('f-logistik')" {% if request.POST.bidang == 'Logistik & Ekspedisi' %}checked{% endif %}><span class="pill-text">📦 Ekspedisi</span></label>
+                    <label class="pill-label"><input type="radio" name="bidang" value="Home Service" onchange="showForm('f-homeservice')" {% if request.POST.bidang == 'Home Service' %}checked{% endif %}><span class="pill-text">🛠️ Home Service</span></label>
+                    <label class="pill-label"><input type="radio" name="bidang" value="Retail" onchange="showForm('f-retail')" {% if request.POST.bidang == 'Retail' %}checked{% endif %}><span class="pill-text">🛒 Retail</span></label>
+                    <label class="pill-label"><input type="radio" name="bidang" value="Event Organizer" onchange="showForm('f-eo')" {% if request.POST.bidang == 'Event Organizer' %}checked{% endif %}><span class="pill-text">🎉 EO</span></label>
                 </div>
 
-                <!-- Formulir Dinamis -->
+                <!-- Formulir Dinamis (Diperbarui dengan memori value="{{ request.POST.xxx }}") -->
                 <div id="f-kuliner" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Kuliner</div>
-                    <div class="form-group"><label>Nama Resto/Cafe</label><input type="text" name="nama_usaha" disabled></div>
-                    <div class="form-group"><label>Menu Spesial/Promo</label><input type="text" name="menu_promo" placeholder="Contoh: Paket Ayam Geprek diskon 20%" disabled></div>
-                    <div class="form-group"><label>Suasana/Fasilitas</label><input type="text" name="fasilitas" placeholder="Contoh: Free WiFi, Cocok untuk nongkrong" disabled></div>
-                    <div class="form-group"><label>Lokasi/Cabang</label><input type="text" name="lokasi" disabled></div>
+                    <div class="form-group"><label>Nama Resto/Cafe</label><input type="text" name="nama_usaha" value="{{ request.POST.nama_usaha }}" disabled></div>
+                    <div class="form-group"><label>Menu Spesial/Promo</label><input type="text" name="menu_promo" value="{{ request.POST.menu_promo }}" placeholder="Contoh: Paket Ayam Geprek diskon 20%" disabled></div>
+                    <div class="form-group"><label>Suasana/Fasilitas</label><input type="text" name="fasilitas" value="{{ request.POST.fasilitas }}" placeholder="Contoh: Free WiFi, Cocok untuk nongkrong" disabled></div>
+                    <div class="form-group"><label>Lokasi/Cabang</label><input type="text" name="lokasi" value="{{ request.POST.lokasi }}" disabled></div>
                 </div>
 
                 <div id="f-fashion" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Fashion</div>
-                    <div class="form-group"><label>Nama Brand</label><input type="text" name="nama_brand" disabled></div>
-                    <div class="form-group"><label>Nama Koleksi/Produk</label><input type="text" name="nama_produk" placeholder="Contoh: Kemeja Linen Summer Edition" disabled></div>
-                    <div class="form-group"><label>Kelebihan Bahan</label><input type="text" name="kelebihan_bahan" placeholder="Contoh: Adem, tidak mudah kusut" disabled></div>
-                    <div class="form-group"><label>Warna/Ukuran Tersedia</label><input type="text" name="varian" disabled></div>
+                    <div class="form-group"><label>Nama Brand</label><input type="text" name="nama_brand" value="{{ request.POST.nama_brand }}" disabled></div>
+                    <div class="form-group"><label>Nama Koleksi/Produk</label><input type="text" name="nama_produk" value="{{ request.POST.nama_produk }}" placeholder="Contoh: Kemeja Linen Summer Edition" disabled></div>
+                    <div class="form-group"><label>Kelebihan Bahan</label><input type="text" name="kelebihan_bahan" value="{{ request.POST.kelebihan_bahan }}" placeholder="Contoh: Adem, tidak mudah kusut" disabled></div>
+                    <div class="form-group"><label>Warna/Ukuran Tersedia</label><input type="text" name="varian" value="{{ request.POST.varian }}" disabled></div>
                 </div>
 
                 <div id="f-skincare" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Skincare & Kosmetik</div>
-                    <div class="form-group"><label>Nama Produk</label><input type="text" name="nama_produk" disabled></div>
-                    <div class="form-group"><label>Hero Ingredients (Kandungan)</label><input type="text" name="kandungan" placeholder="Contoh: Niacinamide 5%, Salicylic Acid" disabled></div>
-                    <div class="form-group"><label>Manfaat Utama</label><input type="text" name="manfaat" placeholder="Contoh: Mencerahkan dan meredakan jerawat" disabled></div>
-                    <div class="form-group"><label>Cocok Untuk Kulit</label><input type="text" name="tipe_kulit" placeholder="Contoh: Kulit berminyak dan sensitif" disabled></div>
+                    <div class="form-group"><label>Nama Produk</label><input type="text" name="nama_produk" value="{{ request.POST.nama_produk }}" disabled></div>
+                    <div class="form-group"><label>Hero Ingredients (Kandungan)</label><input type="text" name="kandungan" value="{{ request.POST.kandungan }}" placeholder="Contoh: Niacinamide 5%, Salicylic Acid" disabled></div>
+                    <div class="form-group"><label>Manfaat Utama</label><input type="text" name="manfaat" value="{{ request.POST.manfaat }}" placeholder="Contoh: Mencerahkan dan meredakan jerawat" disabled></div>
+                    <div class="form-group"><label>Cocok Untuk Kulit</label><input type="text" name="tipe_kulit" value="{{ request.POST.tipe_kulit }}" placeholder="Contoh: Kulit berminyak dan sensitif" disabled></div>
                 </div>
 
                 <div id="f-klinik" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Klinik Kesehatan</div>
-                    <div class="form-group"><label>Nama Klinik</label><input type="text" name="nama_klinik" disabled></div>
-                    <div class="form-group"><label>Layanan Medis Utama</label><input type="text" name="layanan" placeholder="Contoh: Perawatan Gigi, Cek Darah Lengkap" disabled></div>
-                    <div class="form-group"><label>Keunggulan Klinik</label><input type="text" name="keunggulan" placeholder="Contoh: Dokter spesialis berpengalaman, alat modern" disabled></div>
-                    <div class="form-group"><label>Jadwal Buka & Lokasi</label><input type="text" name="jadwal_lokasi" disabled></div>
+                    <div class="form-group"><label>Nama Klinik</label><input type="text" name="nama_klinik" value="{{ request.POST.nama_klinik }}" disabled></div>
+                    <div class="form-group"><label>Layanan Medis Utama</label><input type="text" name="layanan" value="{{ request.POST.layanan }}" placeholder="Contoh: Perawatan Gigi, Cek Darah Lengkap" disabled></div>
+                    <div class="form-group"><label>Keunggulan Klinik</label><input type="text" name="keunggulan" value="{{ request.POST.keunggulan }}" placeholder="Contoh: Dokter spesialis berpengalaman, alat modern" disabled></div>
+                    <div class="form-group"><label>Jadwal Buka & Lokasi</label><input type="text" name="jadwal_lokasi" value="{{ request.POST.jadwal_lokasi }}" disabled></div>
                 </div>
 
                 <div id="f-salon" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Salon & Barbershop</div>
-                    <div class="form-group"><label>Nama Salon/Barber</label><input type="text" name="nama_salon" disabled></div>
-                    <div class="form-group"><label>Treatment Unggulan</label><input type="text" name="treatment" placeholder="Contoh: Hair coloring, Premium Gentleman Haircut" disabled></div>
-                    <div class="form-group"><label>Promo Saat Ini</label><input type="text" name="promo" placeholder="Contoh: Diskon 30% Smoothing tiap Selasa" disabled></div>
-                    <div class="form-group"><label>Lokasi & Kontak Booking</label><input type="text" name="booking" disabled></div>
+                    <div class="form-group"><label>Nama Salon/Barber</label><input type="text" name="nama_salon" value="{{ request.POST.nama_salon }}" disabled></div>
+                    <div class="form-group"><label>Treatment Unggulan</label><input type="text" name="treatment" value="{{ request.POST.treatment }}" placeholder="Contoh: Hair coloring, Premium Gentleman Haircut" disabled></div>
+                    <div class="form-group"><label>Promo Saat Ini</label><input type="text" name="promo" value="{{ request.POST.promo }}" placeholder="Contoh: Diskon 30% Smoothing tiap Selasa" disabled></div>
+                    <div class="form-group"><label>Lokasi & Kontak Booking</label><input type="text" name="booking" value="{{ request.POST.booking }}" disabled></div>
                 </div>
 
                 <div id="f-properti" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Properti</div>
-                    <div class="form-group"><label>Nama Perumahan/Apartemen</label><input type="text" name="nama_properti" disabled></div>
-                    <div class="form-group"><label>Tipe Unit</label><input type="text" name="tipe_unit" placeholder="Contoh: Tipe 36/72, 2 Kamar Tidur" disabled></div>
-                    <div class="form-group"><label>Akses Strategis</label><input type="text" name="akses" placeholder="Contoh: 5 Menit ke Pintu Tol, Dekat Stasiun" disabled></div>
-                    <div class="form-group"><label>Harga/Promo Cicilan</label><input type="text" name="harga_promo" placeholder="Contoh: DP 0%, Cicilan 2 Jutaan" disabled></div>
+                    <div class="form-group"><label>Nama Perumahan/Apartemen</label><input type="text" name="nama_properti" value="{{ request.POST.nama_properti }}" disabled></div>
+                    <div class="form-group"><label>Tipe Unit</label><input type="text" name="tipe_unit" value="{{ request.POST.tipe_unit }}" placeholder="Contoh: Tipe 36/72, 2 Kamar Tidur" disabled></div>
+                    <div class="form-group"><label>Akses Strategis</label><input type="text" name="akses" value="{{ request.POST.akses }}" placeholder="Contoh: 5 Menit ke Pintu Tol, Dekat Stasiun" disabled></div>
+                    <div class="form-group"><label>Harga/Promo Cicilan</label><input type="text" name="harga_promo" value="{{ request.POST.harga_promo }}" placeholder="Contoh: DP 0%, Cicilan 2 Jutaan" disabled></div>
                 </div>
 
                 <div id="f-otomotif" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Dealer & Bengkel</div>
-                    <div class="form-group"><label>Nama Dealer/Bengkel</label><input type="text" name="nama_bengkel" disabled></div>
-                    <div class="form-group"><label>Kendaraan/Layanan</label><input type="text" name="layanan" placeholder="Contoh: Paket Servis Berkala, Promo Mobil SUV Baru" disabled></div>
-                    <div class="form-group"><label>Benefit/Garansi</label><input type="text" name="benefit" placeholder="Contoh: Free Oli, Garansi Mesin 5 Tahun" disabled></div>
-                    <div class="form-group"><label>Harga/Lokasi</label><input type="text" name="harga_lokasi" disabled></div>
+                    <div class="form-group"><label>Nama Dealer/Bengkel</label><input type="text" name="nama_bengkel" value="{{ request.POST.nama_bengkel }}" disabled></div>
+                    <div class="form-group"><label>Kendaraan/Layanan</label><input type="text" name="layanan" value="{{ request.POST.layanan }}" placeholder="Contoh: Paket Servis Berkala, Promo Mobil SUV Baru" disabled></div>
+                    <div class="form-group"><label>Benefit/Garansi</label><input type="text" name="benefit" value="{{ request.POST.benefit }}" placeholder="Contoh: Free Oli, Garansi Mesin 5 Tahun" disabled></div>
+                    <div class="form-group"><label>Harga/Lokasi</label><input type="text" name="harga_lokasi" value="{{ request.POST.harga_lokasi }}" disabled></div>
                 </div>
 
                 <div id="f-digital" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Agensi Digital</div>
-                    <div class="form-group"><label>Nama Agensi</label><input type="text" name="nama_agensi" disabled></div>
-                    <div class="form-group"><label>Layanan yang Ditawarkan</label><input type="text" name="layanan" placeholder="Contoh: Jasa SEO Terpercaya, Bikin Web Company Profile" disabled></div>
-                    <div class="form-group"><label>Benefit untuk Klien</label><input type="text" name="benefit" placeholder="Contoh: Trafik naik 200%, Desain Responsif" disabled></div>
-                    <div class="form-group"><label>Kontak/Website Agensi</label><input type="text" name="kontak" disabled></div>
+                    <div class="form-group"><label>Nama Agensi</label><input type="text" name="nama_agensi" value="{{ request.POST.nama_agensi }}" disabled></div>
+                    <div class="form-group"><label>Layanan yang Ditawarkan</label><input type="text" name="layanan" value="{{ request.POST.layanan }}" placeholder="Contoh: Jasa SEO Terpercaya, Bikin Web Company Profile" disabled></div>
+                    <div class="form-group"><label>Benefit untuk Klien</label><input type="text" name="benefit" value="{{ request.POST.benefit }}" placeholder="Contoh: Trafik naik 200%, Desain Responsif" disabled></div>
+                    <div class="form-group"><label>Kontak/Website Agensi</label><input type="text" name="kontak" value="{{ request.POST.kontak }}" disabled></div>
                 </div>
 
                 <div id="f-kursus" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Kursus & Pelatihan</div>
-                    <div class="form-group"><label>Nama Lembaga</label><input type="text" name="nama_lembaga" disabled></div>
-                    <div class="form-group"><label>Program/Materi Belajar</label><input type="text" name="program" placeholder="Contoh: Bootcamp Data Science, Kursus Bahasa Inggris" disabled></div>
-                    <div class="form-group"><label>Fasilitas/Output Peserta</label><input type="text" name="fasilitas" placeholder="Contoh: Sertifikat, Penyaluran Kerja" disabled></div>
-                    <div class="form-group"><label>Jadwal Daftar/Biaya</label><input type="text" name="jadwal" disabled></div>
+                    <div class="form-group"><label>Nama Lembaga</label><input type="text" name="nama_lembaga" value="{{ request.POST.nama_lembaga }}" disabled></div>
+                    <div class="form-group"><label>Program/Materi Belajar</label><input type="text" name="program" value="{{ request.POST.program }}" placeholder="Contoh: Bootcamp Data Science, Kursus Bahasa Inggris" disabled></div>
+                    <div class="form-group"><label>Fasilitas/Output Peserta</label><input type="text" name="fasilitas" value="{{ request.POST.fasilitas }}" placeholder="Contoh: Sertifikat, Penyaluran Kerja" disabled></div>
+                    <div class="form-group"><label>Jadwal Daftar/Biaya</label><input type="text" name="jadwal" value="{{ request.POST.jadwal }}" disabled></div>
                 </div>
 
                 <div id="f-umkm" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Olshop / UMKM</div>
-                    <div class="form-group"><label>Nama Toko</label><input type="text" name="nama_toko" disabled></div>
-                    <div class="form-group"><label>Kategori Produk</label><input type="text" name="produk" placeholder="Contoh: Aksesoris HP, Kerajinan Tangan Lokal" disabled></div>
-                    <div class="form-group"><label>Promo Spesial</label><input type="text" name="promo" placeholder="Contoh: Beli 2 Gratis 1, Bebas Ongkir" disabled></div>
-                    <div class="form-group"><label>Link Marketplace (Shopee/Tokped dll)</label><input type="text" name="link_toko" disabled></div>
+                    <div class="form-group"><label>Nama Toko</label><input type="text" name="nama_toko" value="{{ request.POST.nama_toko }}" disabled></div>
+                    <div class="form-group"><label>Kategori Produk</label><input type="text" name="produk" value="{{ request.POST.produk }}" placeholder="Contoh: Aksesoris HP, Kerajinan Tangan Lokal" disabled></div>
+                    <div class="form-group"><label>Promo Spesial</label><input type="text" name="promo" value="{{ request.POST.promo }}" placeholder="Contoh: Beli 2 Gratis 1, Bebas Ongkir" disabled></div>
+                    <div class="form-group"><label>Link Marketplace (Shopee/Tokped dll)</label><input type="text" name="link_toko" value="{{ request.POST.link_toko }}" disabled></div>
                 </div>
 
                 <div id="f-agro" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Agrobisnis</div>
-                    <div class="form-group"><label>Nama Farm/Kebun</label><input type="text" name="nama_farm" disabled></div>
-                    <div class="form-group"><label>Komoditas Utama</label><input type="text" name="komoditas" placeholder="Contoh: Ikan Lele Konsumsi, Sayuran Hidroponik" disabled></div>
-                    <div class="form-group"><label>Kelebihan Hasil Panen</label><input type="text" name="kelebihan" placeholder="Contoh: Segar tanpa pestisida, Kualitas Export" disabled></div>
-                    <div class="form-group"><label>Info Pemesanan/Grosir</label><input type="text" name="info_pesan" disabled></div>
+                    <div class="form-group"><label>Nama Farm/Kebun</label><input type="text" name="nama_farm" value="{{ request.POST.nama_farm }}" disabled></div>
+                    <div class="form-group"><label>Komoditas Utama</label><input type="text" name="komoditas" value="{{ request.POST.komoditas }}" placeholder="Contoh: Ikan Lele Konsumsi, Sayuran Hidroponik" disabled></div>
+                    <div class="form-group"><label>Kelebihan Hasil Panen</label><input type="text" name="kelebihan" value="{{ request.POST.kelebihan }}" placeholder="Contoh: Segar tanpa pestisida, Kualitas Export" disabled></div>
+                    <div class="form-group"><label>Info Pemesanan/Grosir</label><input type="text" name="info_pesan" value="{{ request.POST.info_pesan }}" disabled></div>
                 </div>
 
                 <div id="f-pet" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Pet Shop</div>
-                    <div class="form-group"><label>Nama Pet Shop</label><input type="text" name="nama_petshop" disabled></div>
-                    <div class="form-group"><label>Layanan/Produk</label><input type="text" name="layanan" placeholder="Contoh: Grooming Kucing, Makanan Anjing Premium" disabled></div>
-                    <div class="form-group"><label>Keunggulan/Promo</label><input type="text" name="keunggulan" placeholder="Contoh: Groomer bersertifikat, Diskon makanan 10%" disabled></div>
-                    <div class="form-group"><label>Lokasi & Kontak</label><input type="text" name="lokasi" disabled></div>
+                    <div class="form-group"><label>Nama Pet Shop</label><input type="text" name="nama_petshop" value="{{ request.POST.nama_petshop }}" disabled></div>
+                    <div class="form-group"><label>Layanan/Produk</label><input type="text" name="layanan" value="{{ request.POST.layanan }}" placeholder="Contoh: Grooming Kucing, Makanan Anjing Premium" disabled></div>
+                    <div class="form-group"><label>Keunggulan/Promo</label><input type="text" name="keunggulan" value="{{ request.POST.keunggulan }}" placeholder="Contoh: Groomer bersertifikat, Diskon makanan 10%" disabled></div>
+                    <div class="form-group"><label>Lokasi & Kontak</label><input type="text" name="lokasi" value="{{ request.POST.lokasi }}" disabled></div>
                 </div>
 
                 <div id="f-foto" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Fotografi & Video</div>
-                    <div class="form-group"><label>Nama Studio/Vendor</label><input type="text" name="nama_vendor" disabled></div>
-                    <div class="form-group"><label>Jenis Layanan</label><input type="text" name="layanan" placeholder="Contoh: Dokumentasi Wedding, Foto Katalog Produk" disabled></div>
-                    <div class="form-group"><label>Benefit Paket</label><input type="text" name="benefit" placeholder="Contoh: Free cetak album, Kamera Cinematic 4K" disabled></div>
-                    <div class="form-group"><label>Harga Paket/Kontak</label><input type="text" name="harga_kontak" disabled></div>
+                    <div class="form-group"><label>Nama Studio/Vendor</label><input type="text" name="nama_vendor" value="{{ request.POST.nama_vendor }}" disabled></div>
+                    <div class="form-group"><label>Jenis Layanan</label><input type="text" name="layanan" value="{{ request.POST.layanan }}" placeholder="Contoh: Dokumentasi Wedding, Foto Katalog Produk" disabled></div>
+                    <div class="form-group"><label>Benefit Paket</label><input type="text" name="benefit" value="{{ request.POST.benefit }}" placeholder="Contoh: Free cetak album, Kamera Cinematic 4K" disabled></div>
+                    <div class="form-group"><label>Harga Paket/Kontak</label><input type="text" name="harga_kontak" value="{{ request.POST.harga_kontak }}" disabled></div>
                 </div>
 
                 <div id="f-gym" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Gym & Fitness</div>
-                    <div class="form-group"><label>Nama Gym</label><input type="text" name="nama_gym" disabled></div>
-                    <div class="form-group"><label>Fasilitas/Kelas</label><input type="text" name="fasilitas" placeholder="Contoh: Kelas Zumba, Alat Weightlifting Lengkap" disabled></div>
-                    <div class="form-group"><label>Promo Membership</label><input type="text" name="promo" placeholder="Contoh: Daftar 3 bulan gratis 1 bulan" disabled></div>
-                    <div class="form-group"><label>Lokasi/Jam Operasional</label><input type="text" name="operasional" disabled></div>
+                    <div class="form-group"><label>Nama Gym</label><input type="text" name="nama_gym" value="{{ request.POST.nama_gym }}" disabled></div>
+                    <div class="form-group"><label>Fasilitas/Kelas</label><input type="text" name="fasilitas" value="{{ request.POST.fasilitas }}" placeholder="Contoh: Kelas Zumba, Alat Weightlifting Lengkap" disabled></div>
+                    <div class="form-group"><label>Promo Membership</label><input type="text" name="promo" value="{{ request.POST.promo }}" placeholder="Contoh: Daftar 3 bulan gratis 1 bulan" disabled></div>
+                    <div class="form-group"><label>Lokasi/Jam Operasional</label><input type="text" name="operasional" value="{{ request.POST.operasional }}" disabled></div>
                 </div>
 
                 <div id="f-travel" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Travel & Hotel</div>
-                    <div class="form-group"><label>Nama Travel/Hotel</label><input type="text" name="nama_travel" disabled></div>
-                    <div class="form-group"><label>Destinasi/Tipe Kamar</label><input type="text" name="destinasi" placeholder="Contoh: Open Trip Bromo, Kamar Deluxe Sea View" disabled></div>
-                    <div class="form-group"><label>Fasilitas Termasuk</label><input type="text" name="fasilitas" placeholder="Contoh: Makan 3x sehari, Sarapan Gratis" disabled></div>
-                    <div class="form-group"><label>Harga & Tanggal</label><input type="text" name="harga_tanggal" disabled></div>
+                    <div class="form-group"><label>Nama Travel/Hotel</label><input type="text" name="nama_travel" value="{{ request.POST.nama_travel }}" disabled></div>
+                    <div class="form-group"><label>Destinasi/Tipe Kamar</label><input type="text" name="destinasi" value="{{ request.POST.destinasi }}" placeholder="Contoh: Open Trip Bromo, Kamar Deluxe Sea View" disabled></div>
+                    <div class="form-group"><label>Fasilitas Termasuk</label><input type="text" name="fasilitas" value="{{ request.POST.fasilitas }}" placeholder="Contoh: Makan 3x sehari, Sarapan Gratis" disabled></div>
+                    <div class="form-group"><label>Harga & Tanggal</label><input type="text" name="harga_tanggal" value="{{ request.POST.harga_tanggal }}" disabled></div>
                 </div>
 
                 <div id="f-finansial" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Finansial</div>
-                    <div class="form-group"><label>Nama Bank/Lembaga</label><input type="text" name="nama_lembaga" disabled></div>
-                    <div class="form-group"><label>Nama Produk</label><input type="text" name="produk" placeholder="Contoh: Kredit Usaha Rakyat (KUR), Asuransi Jiwa" disabled></div>
-                    <div class="form-group"><label>Keuntungan Utama</label><input type="text" name="keuntungan" placeholder="Contoh: Bunga cuma 6% setahun, Cover hingga miliaran" disabled></div>
-                    <div class="form-group"><label>Syarat Mudah/Call to Action</label><input type="text" name="syarat" disabled></div>
+                    <div class="form-group"><label>Nama Bank/Lembaga</label><input type="text" name="nama_lembaga" value="{{ request.POST.nama_lembaga }}" disabled></div>
+                    <div class="form-group"><label>Nama Produk</label><input type="text" name="produk" value="{{ request.POST.produk }}" placeholder="Contoh: Kredit Usaha Rakyat (KUR), Asuransi Jiwa" disabled></div>
+                    <div class="form-group"><label>Keuntungan Utama</label><input type="text" name="keuntungan" value="{{ request.POST.keuntungan }}" placeholder="Contoh: Bunga cuma 6% setahun, Cover hingga miliaran" disabled></div>
+                    <div class="form-group"><label>Syarat Mudah/Call to Action</label><input type="text" name="syarat" value="{{ request.POST.syarat }}" disabled></div>
                 </div>
 
                 <div id="f-logistik" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Logistik & Ekspedisi</div>
-                    <div class="form-group"><label>Nama Ekspedisi</label><input type="text" name="nama_ekspedisi" disabled></div>
-                    <div class="form-group"><label>Jenis Layanan</label><input type="text" name="layanan" placeholder="Contoh: Cargo Antar Pulau, Same Day Delivery" disabled></div>
-                    <div class="form-group"><label>Keunggulan</label><input type="text" name="keunggulan" placeholder="Contoh: Asuransi barang 100%, Bisa Jemput Paket" disabled></div>
-                    <div class="form-group"><label>Kontak CS / Aplikasi</label><input type="text" name="kontak" disabled></div>
+                    <div class="form-group"><label>Nama Ekspedisi</label><input type="text" name="nama_ekspedisi" value="{{ request.POST.nama_ekspedisi }}" disabled></div>
+                    <div class="form-group"><label>Jenis Layanan</label><input type="text" name="layanan" value="{{ request.POST.layanan }}" placeholder="Contoh: Cargo Antar Pulau, Same Day Delivery" disabled></div>
+                    <div class="form-group"><label>Keunggulan</label><input type="text" name="keunggulan" value="{{ request.POST.keunggulan }}" placeholder="Contoh: Asuransi barang 100%, Bisa Jemput Paket" disabled></div>
+                    <div class="form-group"><label>Kontak CS / Aplikasi</label><input type="text" name="kontak" value="{{ request.POST.kontak }}" disabled></div>
                 </div>
 
                 <div id="f-homeservice" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Home Service</div>
-                    <div class="form-group"><label>Nama Jasa</label><input type="text" name="nama_jasa" disabled></div>
-                    <div class="form-group"><label>Layanan Detail</label><input type="text" name="layanan" placeholder="Contoh: Cuci Sofa, Servis AC Mati Total, Sedot WC" disabled></div>
-                    <div class="form-group"><label>Area Jangkauan & Garansi</label><input type="text" name="area_garansi" placeholder="Contoh: Seluruh Jakarta, Garansi pengerjaan 1 bulan" disabled></div>
-                    <div class="form-group"><label>Kontak Teknisi</label><input type="text" name="kontak" disabled></div>
+                    <div class="form-group"><label>Nama Jasa</label><input type="text" name="nama_jasa" value="{{ request.POST.nama_jasa }}" disabled></div>
+                    <div class="form-group"><label>Layanan Detail</label><input type="text" name="layanan" value="{{ request.POST.layanan }}" placeholder="Contoh: Cuci Sofa, Servis AC Mati Total, Sedot WC" disabled></div>
+                    <div class="form-group"><label>Area Jangkauan & Garansi</label><input type="text" name="area_garansi" value="{{ request.POST.area_garansi }}" placeholder="Contoh: Seluruh Jakarta, Garansi pengerjaan 1 bulan" disabled></div>
+                    <div class="form-group"><label>Kontak Teknisi</label><input type="text" name="kontak" value="{{ request.POST.kontak }}" disabled></div>
                 </div>
 
                 <div id="f-retail" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Retail & Minimarket</div>
-                    <div class="form-group"><label>Nama Toko/Minimarket</label><input type="text" name="nama_retail" disabled></div>
-                    <div class="form-group"><label>Program Promo</label><input type="text" name="promo" placeholder="Contoh: Promo JSM (Jumat Sabtu Minggu), Cuci Gudang" disabled></div>
-                    <div class="form-group"><label>Daftar Barang Diskon</label><input type="text" name="barang_diskon" placeholder="Contoh: Minyak Goreng 2L, Sabun Cuci" disabled></div>
-                    <div class="form-group"><label>Periode & Lokasi</label><input type="text" name="periode_lokasi" disabled></div>
+                    <div class="form-group"><label>Nama Toko/Minimarket</label><input type="text" name="nama_retail" value="{{ request.POST.nama_retail }}" disabled></div>
+                    <div class="form-group"><label>Program Promo</label><input type="text" name="promo" value="{{ request.POST.promo }}" placeholder="Contoh: Promo JSM (Jumat Sabtu Minggu), Cuci Gudang" disabled></div>
+                    <div class="form-group"><label>Daftar Barang Diskon</label><input type="text" name="barang_diskon" value="{{ request.POST.barang_diskon }}" placeholder="Contoh: Minyak Goreng 2L, Sabun Cuci" disabled></div>
+                    <div class="form-group"><label>Periode & Lokasi</label><input type="text" name="periode_lokasi" value="{{ request.POST.periode_lokasi }}" disabled></div>
                 </div>
 
                 <div id="f-eo" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Event Organizer</div>
-                    <div class="form-group"><label>Nama EO / Planner</label><input type="text" name="nama_eo" disabled></div>
-                    <div class="form-group"><label>Jenis Acara</label><input type="text" name="jenis_acara" placeholder="Contoh: Wedding Outdoor, Konser Musik, Pameran" disabled></div>
-                    <div class="form-group"><label>Apa yang Ditawarkan</label><input type="text" name="penawaran" placeholder="Contoh: Bebas stres urus vendor, Dekorasi kustom" disabled></div>
-                    <div class="form-group"><label>Kontak Portofolio</label><input type="text" name="kontak" disabled></div>
+                    <div class="form-group"><label>Nama EO / Planner</label><input type="text" name="nama_eo" value="{{ request.POST.nama_eo }}" disabled></div>
+                    <div class="form-group"><label>Jenis Acara</label><input type="text" name="jenis_acara" value="{{ request.POST.jenis_acara }}" placeholder="Contoh: Wedding Outdoor, Konser Musik, Pameran" disabled></div>
+                    <div class="form-group"><label>Apa yang Ditawarkan</label><input type="text" name="penawaran" value="{{ request.POST.penawaran }}" placeholder="Contoh: Bebas stres urus vendor, Dekorasi kustom" disabled></div>
+                    <div class="form-group"><label>Kontak Portofolio</label><input type="text" name="kontak" value="{{ request.POST.kontak }}" disabled></div>
                 </div>
             </div>
 
@@ -574,7 +607,7 @@
                 <input type="hidden" name="bidang" value="{{ request.POST.bidang }}">
                 <input type="hidden" name="gaya" value="{{ request.POST.gaya }}">
 
-                <!-- Menyimpan parameter detail input agar ikut terikirim saat regenerate -->
+                <!-- Menyimpan parameter detail input agar ikut terkirim saat regenerate -->
                 {% for key, value in request.POST.items %}
                     {% if key not in 'csrfmiddlewaretoken,bidang,gaya,action,image_url,final_caption,gambar' %}
                         <input type="hidden" name="{{ key }}" value="{{ value }}">
@@ -584,10 +617,17 @@
                 <p style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">Teks Caption (Bisa diedit manual sebelum posting):</p>
                 <textarea name="final_caption" class="edit-caption" required>{{ hasil_caption }}</textarea>
                 
-                <button type="submit" class="btn-ig">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                    Terbitkan ke Instagram Sekarang
-                </button>
+                <div class="action-buttons">
+                    <button type="submit" name="action" value="regenerate" class="btn-regenerate">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                        Generate Ulang
+                    </button>
+                    
+                    <button type="submit" name="action" value="post_ig" class="btn-ig">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                        Terbitkan ke Instagram
+                    </button>
+                </div>
             </form>
         </div>
         {% endif %}
