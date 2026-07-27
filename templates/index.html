@@ -343,7 +343,8 @@
         </div>
         <p class="subtitle">Unggah gambar, biarkan AI merangkai kata-kata ajaib, dan terbitkan langsung ke feed Instagram Anda dalam hitungan detik.</p>
 
-        <form method="POST" enctype="multipart/form-data">
+        <!-- Form Utama Generate Caption -->
+        <form method="POST" enctype="multipart/form-data" id="main-form">
             {% csrf_token %}
             <input type="hidden" name="action" value="generate">
             
@@ -523,7 +524,10 @@
                 <div class="selection-title">3. Tentukan Gaya Penulisan</div>
                 <div class="pills-container">
                     {% for gaya in daftar_gaya %}
-                        <label class="pill-label"><input type="radio" name="gaya" value="{{ gaya.id }}" required><span class="pill-text">{{ gaya.nama }}</span></label>
+                        <label class="pill-label">
+                            <input type="radio" name="gaya" value="{{ gaya.id }}" required {% if request.POST.gaya == gaya.id|stringformat:"i" %}checked{% endif %}>
+                            <span class="pill-text">{{ gaya.nama }}</span>
+                        </label>
                     {% endfor %}
                 </div>
             </div>
@@ -557,15 +561,25 @@
             </div>
         {% endif %}
 
+        <!-- Area Preview Hasil & Aksi Lanjutan -->
         {% if hasil_caption and image_url %}
         <div class="preview-box">
             <div class="selection-title">Tinjau & Publikasikan</div>
             <img src="{{ image_url }}" alt="Preview" class="preview-image">
             
-            <form method="POST">
+            <form method="POST" id="action-form">
                 {% csrf_token %}
-                <input type="hidden" name="action" value="post_ig">
+                <!-- Transfer data penting untuk aksi lanjutan -->
                 <input type="hidden" name="image_url" value="{{ image_url }}">
+                <input type="hidden" name="bidang" value="{{ request.POST.bidang }}">
+                <input type="hidden" name="gaya" value="{{ request.POST.gaya }}">
+
+                <!-- Menyimpan parameter detail input agar ikut terikirim saat regenerate -->
+                {% for key, value in request.POST.items %}
+                    {% if key not in 'csrfmiddlewaretoken,bidang,gaya,action,image_url,final_caption,gambar' %}
+                        <input type="hidden" name="{{ key }}" value="{{ value }}">
+                    {% endif %}
+                {% endfor %}
                 
                 <p style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">Teks Caption (Bisa diedit manual sebelum posting):</p>
                 <textarea name="final_caption" class="edit-caption" required>{{ hasil_caption }}</textarea>
@@ -604,6 +618,14 @@
                 activeInputs.forEach(input => input.disabled = false);
             }
         }
+
+        // Pertahankan form aktif jika halaman di-refresh / selesai submit
+        document.addEventListener("DOMContentLoaded", function() {
+            const selectedBidang = document.querySelector('input[name="bidang"]:checked');
+            if (selectedBidang) {
+                selectedBidang.dispatchEvent(new Event('change'));
+            }
+        });
     </script>
 </body>
 </html>

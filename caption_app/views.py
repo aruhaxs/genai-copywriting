@@ -25,7 +25,9 @@ def generate_caption(request):
     if request.method == 'POST':
         action = request.POST.get('action')
 
+        # -------------------------------------------------------------
         # AKSI 1: POSTING KE INSTAGRAM
+        # -------------------------------------------------------------
         if action == 'post_ig':
             final_caption = request.POST.get('final_caption')
             raw_image_url = request.POST.get('image_url')
@@ -124,11 +126,14 @@ def generate_caption(request):
                 context['hasil_caption'] = final_caption
                 context['image_url'] = raw_image_url
 
-        # AKSI 2: GENERATE CAPTION
-        elif action == 'generate':
+        # -------------------------------------------------------------
+        # AKSI 2 & 3: GENERATE AWAL ATAU GENERATE ULANG
+        # -------------------------------------------------------------
+        elif action in ['generate', 'regenerate']:
             bidang = request.POST.get('bidang')
             gaya_id = request.POST.get('gaya')
             gambar = request.FILES.get('gambar')
+            existing_image_url = request.POST.get('image_url')  # Diambil jika aksi 'regenerate'
 
             if bidang and gaya_id:
                 try:
@@ -164,16 +169,33 @@ def generate_caption(request):
                         filename = fs.save(meta_safe_filename, ContentFile(img_io.read()))
                         
                         uploaded_file_url = request.build_absolute_uri(fs.url(filename))
-                        context['image_url'] = uploaded_file_url
+                except Exception as e:
+                    context['error'] = f"Gagal memproses gambar: {str(e)}"
 
+            if action == 'regenerate':
+                if not (bidang and gaya_id and existing_image_url):
+                    context['error'] = "Data tidak lengkap untuk membuat ulang caption."
+                else:
+                    # Menggunakan gambar yang sudah diunggah sebelumnya
+                    uploaded_file_url = existing_image_url
+
+            # Jika validasi lolos & URL gambar tersedia, jalankan AI Gemini
+            if uploaded_file_url and not context.get('error'):
+                try:
+                    if not pengaturan or not pengaturan.gemini_api_key:
+                        raise Exception("API Key Gemini belum dimasukkan di Panel Admin!")
+
+                    context['image_url'] = uploaded_file_url
                     gaya_terpilih = GayaCopywriting.objects.get(id=gaya_id)
 
+                    # Mengumpulkan detail dinamis dari form
                     detail_info = ""
                     for key, value in request.POST.items():
-                        if key not in ['csrfmiddlewaretoken', 'bidang', 'gaya', 'action'] and value.strip() != "":
+                        if key not in ['csrfmiddlewaretoken', 'bidang', 'gaya', 'action', 'image_url', 'final_caption'] and value.strip() != "":
                             label = key.replace('_', ' ').title()
                             detail_info += f"- {label}: {value}\n"
 
+                    # Pemanggilan model Gemini API
                     model = genai.GenerativeModel('gemini-flash-latest')
                     prompt = f"Sebagai seorang copywriter, buat caption Instagram menarik untuk bisnis {bidang}.\n\n"
                     prompt += f"Detail info:\n{detail_info}\n\nInstruksi Gaya:\n{gaya_terpilih.prompt}\n\n"
@@ -183,8 +205,6 @@ def generate_caption(request):
                     context['hasil_caption'] = response.text
 
                 except Exception as e:
-                    context['error'] = f"Terjadi kesalahan saat memproses data: {str(e)}"
-            else:
-                context['error'] = "Mohon lengkapi pilihan bidang dan gaya penulisan!"
+                    context['error'] = f"Terjadi kesalahan AI: {str(e)}"
 
     return render(request, 'index.html', context)
