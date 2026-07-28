@@ -10,29 +10,30 @@ from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
 from django.core.files.base import ContentFile
 from django.utils.text import get_valid_filename
-from .models import GayaCopywriting, PengaturanAPI
+from .models import GayaCopywriting, PengaturanAPI, BidangUsaha
 
 def generate_caption(request):
     daftar_gaya = GayaCopywriting.objects.all()
-    context = {'daftar_gaya': daftar_gaya}
-    
-    # AMBIL PENGATURAN DARI DATABASE
+    daftar_bidang = BidangUsaha.objects.prefetch_related('fields').all()
     pengaturan = PengaturanAPI.objects.first()
-    
-    if pengaturan and pengaturan.gemini_api_key:
-        genai.configure(api_key=pengaturan.gemini_api_key)
+
+    if request.method == 'POST':
+        for bidang in daftar_bidang:
+            for field in bidang.fields.all():
+                field.submitted_value = request.POST.get(field.name_attribute, '')
+
+    context = {
+        'daftar_gaya': daftar_gaya,
+        'daftar_bidang': daftar_bidang
+    }
 
     if request.method == 'POST':
         action = request.POST.get('action')
 
-        # -------------------------------------------------------------
-        # AKSI 1: POSTING KE INSTAGRAM
-        # -------------------------------------------------------------
         if action == 'post_ig':
             final_caption = request.POST.get('final_caption')
             raw_image_url = request.POST.get('image_url')
             
-            # CEK WAJIB GAMBAR
             if not raw_image_url or raw_image_url.strip() == "":
                 context['error_ig'] = "PENTING: Sistem Instagram tidak mengizinkan postingan teks saja. Anda wajib menggunakan gambar."
                 context['hasil_caption'] = final_caption
@@ -50,7 +51,6 @@ def generate_caption(request):
                 ig_access_token = pengaturan.ig_access_token
                 ig_account_id = pengaturan.ig_account_id
                 
-                # === CLOUDINARY UPLOAD LOGIC ===
                 api_kunci_gabungan = pengaturan.cloudinary_creds.strip()
                 if "," not in api_kunci_gabungan:
                     raise ValueError("Format kunci salah! Pastikan mengisi dengan format: CloudName,APIKey,APISecret (dipisahkan koma tanpa spasi).")
@@ -92,15 +92,12 @@ def generate_caption(request):
                     raise Exception(f"Gagal mengunggah gambar ke Cloudinary: {err_msg}")
                 
                 trusted_image_url = cloud_res_json['secure_url']
-                # ==============================================================
 
-                # Step 1: Buat Media Container IG
                 container_payload = {
                     'image_url': trusted_image_url,
                     'caption': final_caption,
                     'access_token': ig_access_token
                 }
-                
                 container_req = requests.post(f"{graph_url}/{ig_account_id}/media", data=container_payload, timeout=20)
                 container_res = container_req.json()
                 
@@ -109,7 +106,6 @@ def generate_caption(request):
                 
                 creation_id = container_res['id']
                 
-                # Step 2: Publikasikan Media ke IG
                 publish_payload = {
                     'creation_id': creation_id,
                     'access_token': ig_access_token
@@ -120,33 +116,32 @@ def generate_caption(request):
                 if 'error' in publish_res:
                     raise Exception(f"Gagal mempublikasikan ke IG: {publish_res['error']['message']}")
                 
-                context['success_msg'] = "🎉 Sukses! Postingan berhasil diunggah ke Instagram!"
+                context['success_msg'] = "🎉 Sukses! Postingan berhasil diunggah ke Instagram! Form telah dibersihkan."
+                
             except Exception as e:
                 context['error_ig'] = str(e)
                 context['hasil_caption'] = final_caption
                 context['image_url'] = raw_image_url
 
-        # -------------------------------------------------------------
-        # AKSI 2 & 3: GENERATE AWAL ATAU GENERATE ULANG
-        # -------------------------------------------------------------
         elif action in ['generate', 'regenerate']:
             bidang = request.POST.get('bidang')
             gaya_id = request.POST.get('gaya')
             gambar = request.FILES.get('gambar')
-            existing_image_url = request.POST.get('image_url')  # Diambil jika aksi 'regenerate'
+            existing_image_url = request.POST.get('image_url')
+
+            uploaded_file_url = None
 
             if bidang and gaya_id:
                 try:
-                    if not pengaturan or not pengaturan.gemini_api_key:
-                        raise Exception("API Key Gemini belum dimasukkan di Panel Admin!")
-
-                    if gambar:
+                    if action == 'generate':
+                        if not gambar:
+                            raise Exception("Harap unggah gambar terlebih dahulu untuk memulai!")
+                            
                         allowed_extensions = ['.jpg', '.jpeg', '.png']
                         ext = os.path.splitext(gambar.name)[1].lower()
                         
                         if ext not in allowed_extensions:
-                            context['error'] = f"Gagal: Format gambar '{ext}' tidak dikenali. Harap unggah foto .jpg, .jpeg, atau .png!"
-                            return render(request, 'index.html', context)
+                            raise Exception(f"Format gambar '{ext}' tidak dikenali. Harap unggah foto .jpg, .jpeg, atau .png!")
                             
                         img = Image.open(gambar)
                         if img.mode != 'RGB':
@@ -167,44 +162,69 @@ def generate_caption(request):
                         
                         fs = FileSystemStorage()
                         filename = fs.save(meta_safe_filename, ContentFile(img_io.read()))
-                        
                         uploaded_file_url = request.build_absolute_uri(fs.url(filename))
+                    
+                    elif action == 'regenerate':
+                        if not existing_image_url:
+                            raise Exception("Data gambar hilang, silakan mulai ulang proses.")
+                        uploaded_file_url = existing_image_url
+
                 except Exception as e:
-                    context['error'] = f"Gagal memproses gambar: {str(e)}"
+                    context['error'] = str(e)
 
-            if action == 'regenerate':
-                if not (bidang and gaya_id and existing_image_url):
-                    context['error'] = "Data tidak lengkap untuk membuat ulang caption."
-                else:
-                    # Menggunakan gambar yang sudah diunggah sebelumnya
-                    uploaded_file_url = existing_image_url
-
-            # Jika validasi lolos & URL gambar tersedia, jalankan AI Gemini
             if uploaded_file_url and not context.get('error'):
                 try:
-                    if not pengaturan or not pengaturan.gemini_api_key:
-                        raise Exception("API Key Gemini belum dimasukkan di Panel Admin!")
-
                     context['image_url'] = uploaded_file_url
                     gaya_terpilih = GayaCopywriting.objects.get(id=gaya_id)
 
-                    # Mengumpulkan detail dinamis dari form
                     detail_info = ""
                     for key, value in request.POST.items():
                         if key not in ['csrfmiddlewaretoken', 'bidang', 'gaya', 'action', 'image_url', 'final_caption', 'gambar'] and value.strip() != "":
                             label = key.replace('_', ' ').title()
                             detail_info += f"- {label}: {value}\n"
 
-                    # Pemanggilan model Gemini API
-                    model = genai.GenerativeModel('gemini-flash-latest')
                     prompt = f"Sebagai seorang copywriter, buat caption Instagram menarik untuk bisnis {bidang}.\n\n"
                     prompt += f"Detail info:\n{detail_info}\n\nInstruksi Gaya:\n{gaya_terpilih.prompt}\n\n"
                     prompt += "Berikan SATU hasil akhir caption saja (tidak perlu alternatif). Jangan pakai teks struktur [HEADER]. Berikan call-to-action dan hashtag."
-                    
-                    response = model.generate_content(prompt)
-                    context['hasil_caption'] = response.text
+
+                    provider = pengaturan.ai_provider if pengaturan else 'gemini'
+
+                    if provider == 'gemini':
+                        if not pengaturan or not pengaturan.gemini_api_key:
+                            raise Exception("API Key Gemini belum diisi di Panel Admin!")
+                        nama_model = pengaturan.gemini_model if pengaturan.gemini_model else 'gemini-flash-latest'
+                        genai.configure(api_key=pengaturan.gemini_api_key)
+                        model = genai.GenerativeModel(nama_model)
+                        response = model.generate_content(prompt)
+                        context['hasil_caption'] = response.text
+
+                    elif provider == 'groq':
+                        if not pengaturan or not pengaturan.groq_api_key:
+                            raise Exception("API Key Groq belum diisi di Panel Admin!")
+                        
+                        nama_model = pengaturan.groq_model if pengaturan.groq_model else 'llama-3.3-70b-versatile'
+                        
+                        headers = {
+                            "Authorization": f"Bearer {pengaturan.groq_api_key.strip()}",
+                            "Content-Type": "application/json"
+                        }
+                        payload = {
+                            "model": nama_model,
+                            "messages": [
+                                {"role": "system", "content": "Anda adalah spesialis Social Media Copywriter."},
+                                {"role": "user", "content": prompt}
+                            ]
+                        }
+                        
+                        res = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload)
+                        res_json = res.json()
+                        
+                        if not res.ok:
+                            raise Exception(res_json.get('error', {}).get('message', 'Error pada server Groq.'))
+                            
+                        context['hasil_caption'] = res_json['choices'][0]['message']['content']
 
                 except Exception as e:
-                    context['error'] = f"Terjadi kesalahan AI: {str(e)}"
+                    context['error'] = f"Gagal menghasilkan caption ({provider.upper()} - Model: {nama_model}): {str(e)}"
 
     return render(request, 'index.html', context)

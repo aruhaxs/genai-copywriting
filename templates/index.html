@@ -7,358 +7,66 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --secondary: #ec4899;
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
+            --primary: #6366f1; --primary-hover: #4f46e5; --secondary: #ec4899;
+            --bg-color: #f8fafc; --card-bg: #ffffff; --text-main: #0f172a;
+            --text-muted: #64748b; --border: #e2e8f0;
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
         }
         
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%);
-            color: var(--text-main); 
-            margin: 0; 
-            padding: 20px; 
-            min-height: 100vh;
-            display: flex; 
-            justify-content: center; 
-            align-items: flex-start;
-        }
-
-        .container { 
-            background: var(--card-bg); 
-            width: 100%; 
-            max-width: 900px; 
-            padding: 40px; 
-            border-radius: 24px; 
-            box-shadow: var(--shadow-lg);
-            margin-top: 20px;
-            margin-bottom: 40px;
-            box-sizing: border-box;
-        }
-
-        .header-section { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 8px; 
-            flex-wrap: wrap; 
-            gap: 15px; 
-        }
-
-        h1 { 
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin: 0; 
-            font-size: 32px; 
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-
-        .btn-admin { 
-            background-color: #1e293b; 
-            color: white; 
-            padding: 10px 18px; 
-            border-radius: 12px; 
-            text-decoration: none; 
-            font-size: 14px; 
-            font-weight: 600; 
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-admin:hover {
-            background-color: #0f172a;
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        p.subtitle { 
-            color: var(--text-muted); 
-            margin-top: 0; 
-            margin-bottom: 35px; 
-            font-size: 15px;
-            line-height: 1.6;
-        }
-
-        .selection-group { 
-            margin-bottom: 35px; 
-            background: #ffffff;
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .selection-title { 
-            font-size: 17px; 
-            font-weight: 700; 
-            margin-bottom: 20px; 
-            color: #1e293b;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .selection-title::before {
-            content: "";
-            display: inline-block;
-            width: 8px;
-            height: 24px;
-            background: var(--primary);
-            border-radius: 4px;
-        }
-
-        /* Styling Input File Custom (Diperbaiki agar tidak keluar form) */
-        input[type="file"] {
-            display: block;
-            width: 100%;
-            padding: 12px;
-            border: 2px dashed #cbd5e1;
-            border-radius: 12px;
-            background-color: #f8fafc;
-            color: #64748b;
-            font-family: inherit;
-            cursor: pointer;
-            box-sizing: border-box; /* PERBAIKAN: Menahan padding agar tidak melebar */
-            transition: all 0.3s;
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%); color: var(--text-main); margin: 0; padding: 20px; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; }
+        .container { background: var(--card-bg); width: 100%; max-width: 900px; padding: 40px; border-radius: 24px; box-shadow: var(--shadow-lg); margin-top: 20px; margin-bottom: 40px; box-sizing: border-box; }
+        .header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 15px; }
+        h1 { background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.5px; }
+        .btn-admin { background-color: #1e293b; color: white; padding: 10px 18px; border-radius: 12px; text-decoration: none; font-size: 14px; font-weight: 600; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-admin:hover { background-color: #0f172a; transform: translateY(-2px); box-shadow: var(--shadow-md); }
+        p.subtitle { color: var(--text-muted); margin-top: 0; margin-bottom: 35px; font-size: 15px; line-height: 1.6; }
+        
+        .step-indicator { display: inline-block; background: #e0e7ff; color: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; margin-bottom: 20px; }
+        .selection-group { margin-bottom: 35px; background: #ffffff; border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-sm); }
+        .selection-title { font-size: 17px; font-weight: 700; margin-bottom: 20px; color: #1e293b; display: flex; align-items: center; gap: 10px; }
+        .selection-title::before { content: ""; display: inline-block; width: 8px; height: 24px; background: var(--primary); border-radius: 4px; }
+        input[type="file"] { display: block; width: 100%; padding: 12px; border: 2px dashed #cbd5e1; border-radius: 12px; background-color: #f8fafc; color: #64748b; font-family: inherit; cursor: pointer; box-sizing: border-box; transition: all 0.3s; }
         input[type="file"]:hover { border-color: var(--primary); background-color: #e0e7ff; }
 
-        /* Styling Pills/Tags */
-        .pills-container { 
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 10px; 
-        }
-
+        .pills-container { display: flex; flex-wrap: wrap; gap: 10px; }
         .pill-label { cursor: pointer; }
         .pill-label input[type="radio"] { display: none; }
-        .pill-text { 
-            display: inline-flex; 
-            align-items: center;
-            padding: 10px 18px; 
-            background-color: #f1f5f9; 
-            color: #475569; 
-            border-radius: 12px; 
-            font-size: 14px; 
-            font-weight: 600; 
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); 
-            border: 2px solid transparent; 
-        }
-
-        .pill-label input[type="radio"]:checked + .pill-text { 
-            background-color: #e0e7ff; 
-            color: var(--primary-hover); 
-            border-color: var(--primary); 
-            transform: scale(1.05);
-            box-shadow: var(--shadow-sm);
-        }
-
+        .pill-text { display: inline-flex; align-items: center; padding: 10px 18px; background-color: #f1f5f9; color: #475569; border-radius: 12px; font-size: 14px; font-weight: 600; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); border: 2px solid transparent; }
+        .pill-label input[type="radio"]:checked + .pill-text { background-color: #e0e7ff; color: var(--primary-hover); border-color: var(--primary); transform: scale(1.05); box-shadow: var(--shadow-sm); }
         .pill-text:hover { background-color: #e2e8f0; }
 
-        /* Styling Form Dinamis */
-        .dynamic-form { 
-            background-color: #f8fafc; 
-            padding: 24px; 
-            border-radius: 16px; 
-            margin-top: 20px; 
-            display: none; 
-            border: 1px solid var(--border); 
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: opacity 0.4s ease, transform 0.4s ease;
-        }
-
-        .dynamic-form.active { 
-            display: block; 
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .form-title {
-            font-size: 15px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: var(--primary);
-            border-bottom: 2px solid #e0e7ff;
-            padding-bottom: 10px;
-        }
-
+        .dynamic-form { background-color: #f8fafc; padding: 24px; border-radius: 16px; margin-top: 20px; display: none; border: 1px solid var(--border); opacity: 0; transform: translateY(-10px); transition: opacity 0.4s ease, transform 0.4s ease; }
+        .dynamic-form.active { display: block; opacity: 1; transform: translateY(0); }
+        .form-title { font-size: 15px; font-weight: 700; margin-bottom: 20px; color: var(--primary); border-bottom: 2px solid #e0e7ff; padding-bottom: 10px; }
         .form-group { margin-bottom: 16px; }
-        .form-group label { 
-            display: block; 
-            margin-bottom: 8px; 
-            font-size: 13px; 
-            font-weight: 600; 
-            color: #334155; 
-        }
-        
-        .form-group input { 
-            width: 100%; 
-            padding: 12px 16px; 
-            border: 1px solid #cbd5e1; 
-            border-radius: 10px; 
-            box-sizing: border-box; 
-            font-family: inherit; 
-            font-size: 14px; 
-            background: white; 
-            transition: all 0.3s;
-        }
-        
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-        }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #334155; }
+        .form-group input { width: 100%; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 10px; box-sizing: border-box; font-family: inherit; font-size: 14px; background: white; transition: all 0.3s; }
+        .form-group input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
 
-        /* Buttons */
-        .btn-submit { 
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
-            color: white; 
-            border: none; 
-            padding: 16px; 
-            width: 100%; 
-            border-radius: 12px; 
-            font-size: 16px; 
-            font-weight: 700; 
-            cursor: pointer; 
-            transition: all 0.3s;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-submit:hover { 
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
-        }
+        .btn-submit { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4); }
 
-        /* Preview & Post Section */
-        .preview-box { 
-            margin-top: 40px; 
-            padding: 30px; 
-            background-color: #ffffff; 
-            border-radius: 20px; 
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-md); 
-        }
+        .edit-caption { width: 100%; min-height: 250px; padding: 16px; border: 1px solid #cbd5e1; border-radius: 12px; box-sizing: border-box; font-family: inherit; font-size: 15px; line-height: 1.6; resize: vertical; background: #ffffff; transition: all 0.3s; }
+        .edit-caption:focus { outline: none; border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
+        .action-buttons { display: flex; gap: 15px; margin-top: 20px; }
+        .btn-ig { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color: white; border: none; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(220, 39, 67, 0.3); flex: 1; }
+        .btn-ig:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(220, 39, 67, 0.4); }
+        .btn-regenerate { background: #f1f5f9; color: #475569; border: 2px solid #cbd5e1; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: all 0.3s; flex: 1; }
+        .btn-regenerate:hover { background: #e2e8f0; border-color: #94a3b8; transform: translateY(-2px); }
+        .btn-reset { display: inline-block; margin-top: 15px; color: var(--text-muted); font-size: 14px; font-weight: 600; text-decoration: none; transition: color 0.3s; }
+        .btn-reset:hover { color: var(--primary); text-decoration: underline; }
 
-        .preview-image { 
-            width: 100%; 
-            max-height: 450px; 
-            object-fit: cover; 
-            border-radius: 12px; 
-            margin-bottom: 20px; 
-            box-shadow: var(--shadow-sm);
-        }
-
-        .edit-caption { 
-            width: 100%; 
-            min-height: 200px; 
-            padding: 16px; 
-            border: 1px solid #cbd5e1; 
-            border-radius: 12px; 
-            box-sizing: border-box; 
-            font-family: inherit; 
-            font-size: 15px;
-            line-height: 1.6; 
-            resize: vertical; 
-            background: #f8fafc;
-            transition: all 0.3s;
-        }
-        
-        .edit-caption:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-        }
-
-        /* Action Buttons Group (Regenerate & Post IG) */
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .btn-ig { 
-            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
-            color: white; 
-            border: none; 
-            padding: 16px; 
-            border-radius: 12px; 
-            font-size: 16px; 
-            font-weight: 700; 
-            cursor: pointer; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            gap: 10px;
-            transition: all 0.3s;
-            box-shadow: 0 4px 12px rgba(220, 39, 67, 0.3);
-            flex: 1;
-        }
-        
-        .btn-ig:hover { 
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(220, 39, 67, 0.4);
-        }
-
-        .btn-regenerate {
-            background: #f1f5f9;
-            color: #475569;
-            border: 2px solid #cbd5e1;
-            padding: 16px;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            transition: all 0.3s;
-            flex: 1;
-        }
-
-        .btn-regenerate:hover {
-            background: #e2e8f0;
-            border-color: #94a3b8;
-            transform: translateY(-2px);
-        }
-
-        /* Alerts */
-        .alert-box {
-            margin-top: 30px; 
-            padding: 20px; 
-            border-radius: 12px;
-            font-size: 15px;
-            line-height: 1.5;
-            display: flex;
-            gap: 12px;
-        }
+        .alert-box { margin-bottom: 25px; padding: 20px; border-radius: 12px; font-size: 15px; line-height: 1.5; display: flex; gap: 12px; }
         .error-box { background-color: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
         .success-box { background-color: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
         
-        /* Mobile Responsiveness */
         @media (max-width: 768px) {
             .container { padding: 25px 20px; margin-top: 0; border-radius: 16px; }
             h1 { font-size: 26px; }
             .selection-group { padding: 16px; }
             .pill-text { padding: 8px 14px; font-size: 13px; }
-            .preview-box { padding: 20px; }
             .action-buttons { flex-direction: column; }
         }
     </style>
@@ -367,209 +75,12 @@
     <div class="container">
         <div class="header-section">
             <h1>✨ Auto-Post IG Studio</h1>
-            <a href="/admin/caption_app/gayacopywriting/" target="_blank" class="btn-admin">
+            <a href="/admin/" target="_blank" class="btn-admin">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"></path><path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"></path></svg>
-                Kelola Gaya AI
+                Panel Admin
             </a>
         </div>
-        <p class="subtitle">Unggah gambar, biarkan AI merangkai kata-kata ajaib, dan terbitkan langsung ke feed Instagram Anda dalam hitungan detik.</p>
-
-        <!-- Form Utama Generate Caption -->
-        <form method="POST" enctype="multipart/form-data" id="main-form">
-            {% csrf_token %}
-            <input type="hidden" name="action" value="generate">
-            
-            <div class="selection-group">
-                <div class="selection-title">1. Unggah Gambar Postingan</div>
-                <!-- Gambar hanya di-required jika belum ada image_url di context -->
-                <input type="file" name="gambar" accept="image/png, image/jpeg, image/jpg" {% if not image_url %}required{% endif %}>
-            </div>
-
-            <div class="selection-group">
-                <div class="selection-title">2. Pilih Bidang Usaha</div>
-                <div class="pills-container">
-                    <!-- Value 'checked' ditambahkan agar memori form tidak hilang setelah disubmit -->
-                    <label class="pill-label"><input type="radio" name="bidang" value="Kuliner" onchange="showForm('f-kuliner')" {% if request.POST.bidang == 'Kuliner' %}checked{% endif %} required><span class="pill-text">🍔 Kuliner</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Fashion" onchange="showForm('f-fashion')" {% if request.POST.bidang == 'Fashion' %}checked{% endif %}><span class="pill-text">👗 Fashion</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Skincare & Kosmetik" onchange="showForm('f-skincare')" {% if request.POST.bidang == 'Skincare & Kosmetik' %}checked{% endif %}><span class="pill-text">💄 Skincare</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Klinik Kesehatan" onchange="showForm('f-klinik')" {% if request.POST.bidang == 'Klinik Kesehatan' %}checked{% endif %}><span class="pill-text">🏥 Klinik</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Salon & Barbershop" onchange="showForm('f-salon')" {% if request.POST.bidang == 'Salon & Barbershop' %}checked{% endif %}><span class="pill-text">💇 Salon/Barber</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Properti" onchange="showForm('f-properti')" {% if request.POST.bidang == 'Properti' %}checked{% endif %}><span class="pill-text">🏠 Properti</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Dealer & Bengkel" onchange="showForm('f-otomotif')" {% if request.POST.bidang == 'Dealer & Bengkel' %}checked{% endif %}><span class="pill-text">🚗 Otomotif</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Jasa Web & Digital" onchange="showForm('f-digital')" {% if request.POST.bidang == 'Jasa Web & Digital' %}checked{% endif %}><span class="pill-text">💻 Agensi Digital</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Kursus & Pelatihan" onchange="showForm('f-kursus')" {% if request.POST.bidang == 'Kursus & Pelatihan' %}checked{% endif %}><span class="pill-text">🎓 Kursus</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Toko Online / UMKM" onchange="showForm('f-umkm')" {% if request.POST.bidang == 'Toko Online / UMKM' %}checked{% endif %}><span class="pill-text">🛍️ Olshop/UMKM</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Budidaya & Pertanian" onchange="showForm('f-agro')" {% if request.POST.bidang == 'Budidaya & Pertanian' %}checked{% endif %}><span class="pill-text">🐟 Agrobisnis</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Pet Shop" onchange="showForm('f-pet')" {% if request.POST.bidang == 'Pet Shop' %}checked{% endif %}><span class="pill-text">🐶 Pet Shop</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Fotografi & Video" onchange="showForm('f-foto')" {% if request.POST.bidang == 'Fotografi & Video' %}checked{% endif %}><span class="pill-text">📷 Fotografi</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Gym & Fitness" onchange="showForm('f-gym')" {% if request.POST.bidang == 'Gym & Fitness' %}checked{% endif %}><span class="pill-text">🏋️ Gym</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Travel & Hotel" onchange="showForm('f-travel')" {% if request.POST.bidang == 'Travel & Hotel' %}checked{% endif %}><span class="pill-text">✈️ Travel/Hotel</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Bank & Asuransi" onchange="showForm('f-finansial')" {% if request.POST.bidang == 'Bank & Asuransi' %}checked{% endif %}><span class="pill-text">🏦 Finansial</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Logistik & Ekspedisi" onchange="showForm('f-logistik')" {% if request.POST.bidang == 'Logistik & Ekspedisi' %}checked{% endif %}><span class="pill-text">📦 Ekspedisi</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Home Service" onchange="showForm('f-homeservice')" {% if request.POST.bidang == 'Home Service' %}checked{% endif %}><span class="pill-text">🛠️ Home Service</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Retail" onchange="showForm('f-retail')" {% if request.POST.bidang == 'Retail' %}checked{% endif %}><span class="pill-text">🛒 Retail</span></label>
-                    <label class="pill-label"><input type="radio" name="bidang" value="Event Organizer" onchange="showForm('f-eo')" {% if request.POST.bidang == 'Event Organizer' %}checked{% endif %}><span class="pill-text">🎉 EO</span></label>
-                </div>
-
-                <!-- Formulir Dinamis (Diperbarui dengan memori value="{{ request.POST.xxx }}") -->
-                <div id="f-kuliner" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Kuliner</div>
-                    <div class="form-group"><label>Nama Resto/Cafe</label><input type="text" name="nama_usaha" value="{{ request.POST.nama_usaha }}" disabled></div>
-                    <div class="form-group"><label>Menu Spesial/Promo</label><input type="text" name="menu_promo" value="{{ request.POST.menu_promo }}" placeholder="Contoh: Paket Ayam Geprek diskon 20%" disabled></div>
-                    <div class="form-group"><label>Suasana/Fasilitas</label><input type="text" name="fasilitas" value="{{ request.POST.fasilitas }}" placeholder="Contoh: Free WiFi, Cocok untuk nongkrong" disabled></div>
-                    <div class="form-group"><label>Lokasi/Cabang</label><input type="text" name="lokasi" value="{{ request.POST.lokasi }}" disabled></div>
-                </div>
-
-                <div id="f-fashion" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Fashion</div>
-                    <div class="form-group"><label>Nama Brand</label><input type="text" name="nama_brand" value="{{ request.POST.nama_brand }}" disabled></div>
-                    <div class="form-group"><label>Nama Koleksi/Produk</label><input type="text" name="nama_produk" value="{{ request.POST.nama_produk }}" placeholder="Contoh: Kemeja Linen Summer Edition" disabled></div>
-                    <div class="form-group"><label>Kelebihan Bahan</label><input type="text" name="kelebihan_bahan" value="{{ request.POST.kelebihan_bahan }}" placeholder="Contoh: Adem, tidak mudah kusut" disabled></div>
-                    <div class="form-group"><label>Warna/Ukuran Tersedia</label><input type="text" name="varian" value="{{ request.POST.varian }}" disabled></div>
-                </div>
-
-                <div id="f-skincare" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Skincare & Kosmetik</div>
-                    <div class="form-group"><label>Nama Produk</label><input type="text" name="nama_produk" value="{{ request.POST.nama_produk }}" disabled></div>
-                    <div class="form-group"><label>Hero Ingredients (Kandungan)</label><input type="text" name="kandungan" value="{{ request.POST.kandungan }}" placeholder="Contoh: Niacinamide 5%, Salicylic Acid" disabled></div>
-                    <div class="form-group"><label>Manfaat Utama</label><input type="text" name="manfaat" value="{{ request.POST.manfaat }}" placeholder="Contoh: Mencerahkan dan meredakan jerawat" disabled></div>
-                    <div class="form-group"><label>Cocok Untuk Kulit</label><input type="text" name="tipe_kulit" value="{{ request.POST.tipe_kulit }}" placeholder="Contoh: Kulit berminyak dan sensitif" disabled></div>
-                </div>
-
-                <div id="f-klinik" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Klinik Kesehatan</div>
-                    <div class="form-group"><label>Nama Klinik</label><input type="text" name="nama_klinik" value="{{ request.POST.nama_klinik }}" disabled></div>
-                    <div class="form-group"><label>Layanan Medis Utama</label><input type="text" name="layanan" value="{{ request.POST.layanan }}" placeholder="Contoh: Perawatan Gigi, Cek Darah Lengkap" disabled></div>
-                    <div class="form-group"><label>Keunggulan Klinik</label><input type="text" name="keunggulan" value="{{ request.POST.keunggulan }}" placeholder="Contoh: Dokter spesialis berpengalaman, alat modern" disabled></div>
-                    <div class="form-group"><label>Jadwal Buka & Lokasi</label><input type="text" name="jadwal_lokasi" value="{{ request.POST.jadwal_lokasi }}" disabled></div>
-                </div>
-
-                <div id="f-salon" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Salon & Barbershop</div>
-                    <div class="form-group"><label>Nama Salon/Barber</label><input type="text" name="nama_salon" value="{{ request.POST.nama_salon }}" disabled></div>
-                    <div class="form-group"><label>Treatment Unggulan</label><input type="text" name="treatment" value="{{ request.POST.treatment }}" placeholder="Contoh: Hair coloring, Premium Gentleman Haircut" disabled></div>
-                    <div class="form-group"><label>Promo Saat Ini</label><input type="text" name="promo" value="{{ request.POST.promo }}" placeholder="Contoh: Diskon 30% Smoothing tiap Selasa" disabled></div>
-                    <div class="form-group"><label>Lokasi & Kontak Booking</label><input type="text" name="booking" value="{{ request.POST.booking }}" disabled></div>
-                </div>
-
-                <div id="f-properti" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Properti</div>
-                    <div class="form-group"><label>Nama Perumahan/Apartemen</label><input type="text" name="nama_properti" value="{{ request.POST.nama_properti }}" disabled></div>
-                    <div class="form-group"><label>Tipe Unit</label><input type="text" name="tipe_unit" value="{{ request.POST.tipe_unit }}" placeholder="Contoh: Tipe 36/72, 2 Kamar Tidur" disabled></div>
-                    <div class="form-group"><label>Akses Strategis</label><input type="text" name="akses" value="{{ request.POST.akses }}" placeholder="Contoh: 5 Menit ke Pintu Tol, Dekat Stasiun" disabled></div>
-                    <div class="form-group"><label>Harga/Promo Cicilan</label><input type="text" name="harga_promo" value="{{ request.POST.harga_promo }}" placeholder="Contoh: DP 0%, Cicilan 2 Jutaan" disabled></div>
-                </div>
-
-                <div id="f-otomotif" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Dealer & Bengkel</div>
-                    <div class="form-group"><label>Nama Dealer/Bengkel</label><input type="text" name="nama_bengkel" value="{{ request.POST.nama_bengkel }}" disabled></div>
-                    <div class="form-group"><label>Kendaraan/Layanan</label><input type="text" name="layanan" value="{{ request.POST.layanan }}" placeholder="Contoh: Paket Servis Berkala, Promo Mobil SUV Baru" disabled></div>
-                    <div class="form-group"><label>Benefit/Garansi</label><input type="text" name="benefit" value="{{ request.POST.benefit }}" placeholder="Contoh: Free Oli, Garansi Mesin 5 Tahun" disabled></div>
-                    <div class="form-group"><label>Harga/Lokasi</label><input type="text" name="harga_lokasi" value="{{ request.POST.harga_lokasi }}" disabled></div>
-                </div>
-
-                <div id="f-digital" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Agensi Digital</div>
-                    <div class="form-group"><label>Nama Agensi</label><input type="text" name="nama_agensi" value="{{ request.POST.nama_agensi }}" disabled></div>
-                    <div class="form-group"><label>Layanan yang Ditawarkan</label><input type="text" name="layanan" value="{{ request.POST.layanan }}" placeholder="Contoh: Jasa SEO Terpercaya, Bikin Web Company Profile" disabled></div>
-                    <div class="form-group"><label>Benefit untuk Klien</label><input type="text" name="benefit" value="{{ request.POST.benefit }}" placeholder="Contoh: Trafik naik 200%, Desain Responsif" disabled></div>
-                    <div class="form-group"><label>Kontak/Website Agensi</label><input type="text" name="kontak" value="{{ request.POST.kontak }}" disabled></div>
-                </div>
-
-                <div id="f-kursus" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Kursus & Pelatihan</div>
-                    <div class="form-group"><label>Nama Lembaga</label><input type="text" name="nama_lembaga" value="{{ request.POST.nama_lembaga }}" disabled></div>
-                    <div class="form-group"><label>Program/Materi Belajar</label><input type="text" name="program" value="{{ request.POST.program }}" placeholder="Contoh: Bootcamp Data Science, Kursus Bahasa Inggris" disabled></div>
-                    <div class="form-group"><label>Fasilitas/Output Peserta</label><input type="text" name="fasilitas" value="{{ request.POST.fasilitas }}" placeholder="Contoh: Sertifikat, Penyaluran Kerja" disabled></div>
-                    <div class="form-group"><label>Jadwal Daftar/Biaya</label><input type="text" name="jadwal" value="{{ request.POST.jadwal }}" disabled></div>
-                </div>
-
-                <div id="f-umkm" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Olshop / UMKM</div>
-                    <div class="form-group"><label>Nama Toko</label><input type="text" name="nama_toko" value="{{ request.POST.nama_toko }}" disabled></div>
-                    <div class="form-group"><label>Kategori Produk</label><input type="text" name="produk" value="{{ request.POST.produk }}" placeholder="Contoh: Aksesoris HP, Kerajinan Tangan Lokal" disabled></div>
-                    <div class="form-group"><label>Promo Spesial</label><input type="text" name="promo" value="{{ request.POST.promo }}" placeholder="Contoh: Beli 2 Gratis 1, Bebas Ongkir" disabled></div>
-                    <div class="form-group"><label>Link Marketplace (Shopee/Tokped dll)</label><input type="text" name="link_toko" value="{{ request.POST.link_toko }}" disabled></div>
-                </div>
-
-                <div id="f-agro" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Agrobisnis</div>
-                    <div class="form-group"><label>Nama Farm/Kebun</label><input type="text" name="nama_farm" value="{{ request.POST.nama_farm }}" disabled></div>
-                    <div class="form-group"><label>Komoditas Utama</label><input type="text" name="komoditas" value="{{ request.POST.komoditas }}" placeholder="Contoh: Ikan Lele Konsumsi, Sayuran Hidroponik" disabled></div>
-                    <div class="form-group"><label>Kelebihan Hasil Panen</label><input type="text" name="kelebihan" value="{{ request.POST.kelebihan }}" placeholder="Contoh: Segar tanpa pestisida, Kualitas Export" disabled></div>
-                    <div class="form-group"><label>Info Pemesanan/Grosir</label><input type="text" name="info_pesan" value="{{ request.POST.info_pesan }}" disabled></div>
-                </div>
-
-                <div id="f-pet" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Pet Shop</div>
-                    <div class="form-group"><label>Nama Pet Shop</label><input type="text" name="nama_petshop" value="{{ request.POST.nama_petshop }}" disabled></div>
-                    <div class="form-group"><label>Layanan/Produk</label><input type="text" name="layanan" value="{{ request.POST.layanan }}" placeholder="Contoh: Grooming Kucing, Makanan Anjing Premium" disabled></div>
-                    <div class="form-group"><label>Keunggulan/Promo</label><input type="text" name="keunggulan" value="{{ request.POST.keunggulan }}" placeholder="Contoh: Groomer bersertifikat, Diskon makanan 10%" disabled></div>
-                    <div class="form-group"><label>Lokasi & Kontak</label><input type="text" name="lokasi" value="{{ request.POST.lokasi }}" disabled></div>
-                </div>
-
-                <div id="f-foto" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Fotografi & Video</div>
-                    <div class="form-group"><label>Nama Studio/Vendor</label><input type="text" name="nama_vendor" value="{{ request.POST.nama_vendor }}" disabled></div>
-                    <div class="form-group"><label>Jenis Layanan</label><input type="text" name="layanan" value="{{ request.POST.layanan }}" placeholder="Contoh: Dokumentasi Wedding, Foto Katalog Produk" disabled></div>
-                    <div class="form-group"><label>Benefit Paket</label><input type="text" name="benefit" value="{{ request.POST.benefit }}" placeholder="Contoh: Free cetak album, Kamera Cinematic 4K" disabled></div>
-                    <div class="form-group"><label>Harga Paket/Kontak</label><input type="text" name="harga_kontak" value="{{ request.POST.harga_kontak }}" disabled></div>
-                </div>
-
-                <div id="f-gym" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Gym & Fitness</div>
-                    <div class="form-group"><label>Nama Gym</label><input type="text" name="nama_gym" value="{{ request.POST.nama_gym }}" disabled></div>
-                    <div class="form-group"><label>Fasilitas/Kelas</label><input type="text" name="fasilitas" value="{{ request.POST.fasilitas }}" placeholder="Contoh: Kelas Zumba, Alat Weightlifting Lengkap" disabled></div>
-                    <div class="form-group"><label>Promo Membership</label><input type="text" name="promo" value="{{ request.POST.promo }}" placeholder="Contoh: Daftar 3 bulan gratis 1 bulan" disabled></div>
-                    <div class="form-group"><label>Lokasi/Jam Operasional</label><input type="text" name="operasional" value="{{ request.POST.operasional }}" disabled></div>
-                </div>
-
-                <div id="f-travel" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Travel & Hotel</div>
-                    <div class="form-group"><label>Nama Travel/Hotel</label><input type="text" name="nama_travel" value="{{ request.POST.nama_travel }}" disabled></div>
-                    <div class="form-group"><label>Destinasi/Tipe Kamar</label><input type="text" name="destinasi" value="{{ request.POST.destinasi }}" placeholder="Contoh: Open Trip Bromo, Kamar Deluxe Sea View" disabled></div>
-                    <div class="form-group"><label>Fasilitas Termasuk</label><input type="text" name="fasilitas" value="{{ request.POST.fasilitas }}" placeholder="Contoh: Makan 3x sehari, Sarapan Gratis" disabled></div>
-                    <div class="form-group"><label>Harga & Tanggal</label><input type="text" name="harga_tanggal" value="{{ request.POST.harga_tanggal }}" disabled></div>
-                </div>
-
-                <div id="f-finansial" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Finansial</div>
-                    <div class="form-group"><label>Nama Bank/Lembaga</label><input type="text" name="nama_lembaga" value="{{ request.POST.nama_lembaga }}" disabled></div>
-                    <div class="form-group"><label>Nama Produk</label><input type="text" name="produk" value="{{ request.POST.produk }}" placeholder="Contoh: Kredit Usaha Rakyat (KUR), Asuransi Jiwa" disabled></div>
-                    <div class="form-group"><label>Keuntungan Utama</label><input type="text" name="keuntungan" value="{{ request.POST.keuntungan }}" placeholder="Contoh: Bunga cuma 6% setahun, Cover hingga miliaran" disabled></div>
-                    <div class="form-group"><label>Syarat Mudah/Call to Action</label><input type="text" name="syarat" value="{{ request.POST.syarat }}" disabled></div>
-                </div>
-
-                <div id="f-logistik" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Logistik & Ekspedisi</div>
-                    <div class="form-group"><label>Nama Ekspedisi</label><input type="text" name="nama_ekspedisi" value="{{ request.POST.nama_ekspedisi }}" disabled></div>
-                    <div class="form-group"><label>Jenis Layanan</label><input type="text" name="layanan" value="{{ request.POST.layanan }}" placeholder="Contoh: Cargo Antar Pulau, Same Day Delivery" disabled></div>
-                    <div class="form-group"><label>Keunggulan</label><input type="text" name="keunggulan" value="{{ request.POST.keunggulan }}" placeholder="Contoh: Asuransi barang 100%, Bisa Jemput Paket" disabled></div>
-                    <div class="form-group"><label>Kontak CS / Aplikasi</label><input type="text" name="kontak" value="{{ request.POST.kontak }}" disabled></div>
-                </div>
-
-                <div id="f-homeservice" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Home Service</div>
-                    <div class="form-group"><label>Nama Jasa</label><input type="text" name="nama_jasa" value="{{ request.POST.nama_jasa }}" disabled></div>
-                    <div class="form-group"><label>Layanan Detail</label><input type="text" name="layanan" value="{{ request.POST.layanan }}" placeholder="Contoh: Cuci Sofa, Servis AC Mati Total, Sedot WC" disabled></div>
-                    <div class="form-group"><label>Area Jangkauan & Garansi</label><input type="text" name="area_garansi" value="{{ request.POST.area_garansi }}" placeholder="Contoh: Seluruh Jakarta, Garansi pengerjaan 1 bulan" disabled></div>
-                    <div class="form-group"><label>Kontak Teknisi</label><input type="text" name="kontak" value="{{ request.POST.kontak }}" disabled></div>
-                </div>
-
-                <div id="f-retail" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Retail & Minimarket</div>
-                    <div class="form-group"><label>Nama Toko/Minimarket</label><input type="text" name="nama_retail" value="{{ request.POST.nama_retail }}" disabled></div>
-                    <div class="form-group"><label>Program Promo</label><input type="text" name="promo" value="{{ request.POST.promo }}" placeholder="Contoh: Promo JSM (Jumat Sabtu Minggu), Cuci Gudang" disabled></div>
-                    <div class="form-group"><label>Daftar Barang Diskon</label><input type="text" name="barang_diskon" value="{{ request.POST.barang_diskon }}" placeholder="Contoh: Minyak Goreng 2L, Sabun Cuci" disabled></div>
-                    <div class="form-group"><label>Periode & Lokasi</label><input type="text" name="periode_lokasi" value="{{ request.POST.periode_lokasi }}" disabled></div>
-                </div>
-
-                <div id="f-eo" class="dynamic-form"><div class="form-title">Spesifikasi Konten: Event Organizer</div>
-                    <div class="form-group"><label>Nama EO / Planner</label><input type="text" name="nama_eo" value="{{ request.POST.nama_eo }}" disabled></div>
-                    <div class="form-group"><label>Jenis Acara</label><input type="text" name="jenis_acara" value="{{ request.POST.jenis_acara }}" placeholder="Contoh: Wedding Outdoor, Konser Musik, Pameran" disabled></div>
-                    <div class="form-group"><label>Apa yang Ditawarkan</label><input type="text" name="penawaran" value="{{ request.POST.penawaran }}" placeholder="Contoh: Bebas stres urus vendor, Dekorasi kustom" disabled></div>
-                    <div class="form-group"><label>Kontak Portofolio</label><input type="text" name="kontak" value="{{ request.POST.kontak }}" disabled></div>
-                </div>
-            </div>
-
-            <div class="selection-group">
-                <div class="selection-title">3. Tentukan Gaya Penulisan</div>
-                <div class="pills-container">
-                    {% for gaya in daftar_gaya %}
-                        <label class="pill-label">
-                            <input type="radio" name="gaya" value="{{ gaya.id }}" required {% if request.POST.gaya == gaya.id|stringformat:"i" %}checked{% endif %}>
-                            <span class="pill-text">{{ gaya.nama }}</span>
-                        </label>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <button type="submit" class="btn-submit">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-                Generate Caption Ajaib
-            </button>
-        </form>
+        <p class="subtitle">Unggah gambar, biarkan AI merangkai kata-kata ajaib, dan terbitkan langsung ke feed Instagram Anda.</p>
 
         {% if error %}
             <div class="alert-box error-box">
@@ -581,9 +92,7 @@
         {% if error_ig %}
             <div class="alert-box error-box">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                <div>
-                    <b>Gagal Posting ke Instagram:</b><br>{{ error_ig }}
-                </div>
+                <div><b>Gagal Posting ke Instagram:</b><br>{{ error_ig }}</div>
             </div>
         {% endif %}
         
@@ -594,72 +103,122 @@
             </div>
         {% endif %}
 
-        <!-- Area Preview Hasil & Aksi Lanjutan -->
-        {% if hasil_caption and image_url %}
-        <div class="preview-box">
-            <div class="selection-title">Tinjau & Publikasikan</div>
-            <img src="{{ image_url }}" alt="Preview" class="preview-image">
+        <form method="POST" enctype="multipart/form-data" id="main-form">
+            {% csrf_token %}
             
-            <form method="POST" id="action-form">
-                {% csrf_token %}
-                <!-- Transfer data penting untuk aksi lanjutan -->
+            {% if image_url and hasil_caption %}
                 <input type="hidden" name="image_url" value="{{ image_url }}">
-                <input type="hidden" name="bidang" value="{{ request.POST.bidang }}">
-                <input type="hidden" name="gaya" value="{{ request.POST.gaya }}">
+            {% endif %}
 
-                <!-- Menyimpan parameter detail input agar ikut terkirim saat regenerate -->
-                {% for key, value in request.POST.items %}
-                    {% if key not in 'csrfmiddlewaretoken,bidang,gaya,action,image_url,final_caption,gambar' %}
-                        <input type="hidden" name="{{ key }}" value="{{ value }}">
-                    {% endif %}
-                {% endfor %}
-                
-                <p style="font-size: 14px; font-weight: 600; margin-bottom: 8px;">Teks Caption (Bisa diedit manual sebelum posting):</p>
-                <textarea name="final_caption" class="edit-caption" required>{{ hasil_caption }}</textarea>
-                
-                <div class="action-buttons">
-                    <button type="submit" name="action" value="regenerate" class="btn-regenerate">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-                        Generate Ulang
-                    </button>
-                    
-                    <button type="submit" name="action" value="post_ig" class="btn-ig">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                        Terbitkan ke Instagram
-                    </button>
+            {% if not hasil_caption %}
+                <div class="step-indicator">Langkah 1: Persiapan Konten</div>
+                <div class="selection-group">
+                    <div class="selection-title">1. Unggah Gambar Postingan</div>
+                    <input type="file" name="gambar" accept="image/png, image/jpeg, image/jpg" required>
                 </div>
-            </form>
-        </div>
-        {% endif %}
+            {% else %}
+                <div class="step-indicator" style="background: #dcfce7; color: #166534;">Langkah 2: Tinjau & Edit Konten</div>
+                <div class="selection-group" style="text-align: center;">
+                    <div class="selection-title" style="justify-content: flex-start;">1. Gambar Postingan</div>
+                    <img src="{{ image_url }}" alt="Preview" style="width:100%; max-height:450px; object-fit:cover; border-radius:12px; margin-bottom:10px; box-shadow: var(--shadow-sm);">
+                    <br>
+                    <a href="/" class="btn-reset">← Ganti Gambar (Mulai Ulang dari Awal)</a>
+                </div>
+            {% endif %}
+
+            <div class="selection-group">
+                <div class="selection-title">2. Pilih Bidang Usaha</div>
+                
+                {% if not daftar_bidang %}
+                    <p style="color: #ef4444; font-size: 14px;"><b>Perhatian:</b> Belum ada Bidang Usaha yang dibuat. Silakan tambahkan di Panel Admin.</p>
+                {% else %}
+                    <div class="pills-container">
+                        {% for bidang in daftar_bidang %}
+                            <label class="pill-label">
+                                <input type="radio" name="bidang" value="{{ bidang.nama }}" onchange="showForm('f-{{ bidang.id }}')" {% if request.POST.bidang == bidang.nama and not success_msg %}checked{% endif %} required>
+                                <span class="pill-text">{{ bidang.ikon }} {{ bidang.nama }}</span>
+                            </label>
+                        {% endfor %}
+                    </div>
+
+                    {% for bidang in daftar_bidang %}
+                    <div id="f-{{ bidang.id }}" class="dynamic-form">
+                        <div class="form-title">Spesifikasi Konten: {{ bidang.nama }}</div>
+                        
+                        {% for field in bidang.fields.all %}
+                        <div class="form-group">
+                            <label>{{ field.label }}</label>
+                            <input type="text" name="{{ field.name_attribute }}" value="{% if not success_msg %}{{ field.submitted_value }}{% endif %}" placeholder="{{ field.placeholder|default:'' }}" disabled>
+                        </div>
+                        {% endfor %}
+                        
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div class="selection-group">
+                <div class="selection-title">3. Tentukan Gaya Penulisan</div>
+                <div class="pills-container">
+                    {% for gaya in daftar_gaya %}
+                        <label class="pill-label">
+                            <input type="radio" name="gaya" value="{{ gaya.id }}" required {% if request.POST.gaya == gaya.id|stringformat:"i" and not success_msg %}checked{% endif %}>
+                            <span class="pill-text">{{ gaya.nama }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            {% if not hasil_caption %}
+                <button type="submit" name="action" value="generate" class="btn-submit">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    Generate Caption Ajaib
+                </button>
+            {% else %}
+                <div class="selection-group" style="border-color: var(--primary); background: #f0f4ff; margin-top: 20px;">
+                    <div class="selection-title">4. Tinjau & Edit Caption</div>
+                    <p style="font-size: 14px; margin-bottom: 12px; color: #475569;">Anda dapat mengedit teks ini secara manual, atau mengubah spesifikasi Bidang dan Gaya di atas lalu klik <b>Generate Ulang</b>.</p>
+                    
+                    <textarea name="final_caption" class="edit-caption" required>{{ hasil_caption }}</textarea>
+                    
+                    <div class="action-buttons">
+                        <button type="submit" name="action" value="regenerate" class="btn-regenerate">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                            Generate Ulang
+                        </button>
+                        
+                        <button type="submit" name="action" value="post_ig" class="btn-ig">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                            Terbitkan ke Instagram
+                        </button>
+                    </div>
+                </div>
+            {% endif %}
+
+        </form>
     </div>
 
     <script>
         function showForm(formId) {
-            // Sembunyikan semua form
             const forms = document.querySelectorAll('.dynamic-form');
             forms.forEach(form => {
                 form.classList.remove('active');
             });
             
-            // Disable semua input yang tersembunyi
             const allInputs = document.querySelectorAll('.dynamic-form input');
             allInputs.forEach(input => input.disabled = true);
             
-            // Tampilkan form yang dipilih dengan animasi
             const selectedForm = document.getElementById(formId);
             if(selectedForm) {
-                // Beri sedikit jeda agar transisi CSS terlihat halus
                 setTimeout(() => {
                     selectedForm.classList.add('active');
                 }, 50);
                 
-                // Enable input pada form yang aktif
                 const activeInputs = selectedForm.querySelectorAll('input');
                 activeInputs.forEach(input => input.disabled = false);
             }
         }
 
-        // Pertahankan form aktif jika halaman di-refresh / selesai submit
         document.addEventListener("DOMContentLoaded", function() {
             const selectedBidang = document.querySelector('input[name="bidang"]:checked');
             if (selectedBidang) {

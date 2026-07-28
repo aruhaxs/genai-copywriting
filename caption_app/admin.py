@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group
-from .models import GayaCopywriting, PengaturanAPI
+from .models import GayaCopywriting, PengaturanAPI, BidangUsaha, FieldBidang
 
 admin.site.unregister(Group)
 admin.site.site_header = "Panel Admin AI Copywriting"
@@ -22,20 +22,29 @@ class GayaCopywritingAdmin(admin.ModelAdmin):
 
 @admin.register(PengaturanAPI)
 class PengaturanAPIAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'diperbarui_pada')
+    list_display = ('__str__', 'ai_provider', 'diperbarui_pada')
     
     fieldsets = (
-        ('🤖 Kunci API (Google Gemini)', {
-            'fields': ('gemini_api_key',),
-            'description': 'Masukkan API Key Gemini di sini agar AI dapat membuat caption.',
+        ('MESIN AI UTAMA', {
+            'fields': ('ai_provider',),
+            'description': 'Pilih mesin AI yang aktif untuk memproses caption.',
         }),
-        ('☁️ Kredensial (Cloudinary)', {
+        ('GOOGLE GEMINI', {
+            'fields': ('gemini_api_key', 'gemini_model'),
+            'description': 'Pengaturan untuk Google Gemini.',
+            'classes': ('collapse',),
+        }),
+        ('GROQ CLOUD', {
+            'fields': ('groq_api_key', 'groq_model'),
+            'description': 'Pengaturan untuk model super cepat Groq.',
+            'classes': ('collapse',),
+        }),
+        ('KREDENSIAL Cloudinary', {
             'fields': ('cloudinary_creds',),
-            'description': 'Masukkan Kredensial Cloudinary dengan format: CloudName,APIKey,APISecret (tanpa spasi).',
+            'description': 'Format: CloudName,APIKey,APISecret (tanpa spasi).',
         }),
-        ('📱 Token Meta (Instagram)', {
+        ('TOKEN Instagram', {
             'fields': ('ig_access_token', 'ig_account_id'),
-            'description': 'Masukkan Token Akses dan ID Akun IG. Perbarui token di sini jika sudah kadaluarsa.',
         }),
     )
 
@@ -43,4 +52,12 @@ class PengaturanAPIAdmin(admin.ModelAdmin):
         if self.model.objects.exists():
             return False
         return True
-    
+
+class FieldBidangInline(admin.TabularInline):
+    model = FieldBidang
+    extra = 1
+
+@admin.register(BidangUsaha)
+class BidangUsahaAdmin(admin.ModelAdmin):
+    list_display = ('nama', 'ikon')
+    inlines = [FieldBidangInline]
