@@ -44,7 +44,7 @@ class PengaturanAPIAdmin(admin.ModelAdmin):
             'description': 'Format: CloudName,APIKey,APISecret (tanpa spasi).',
         }),
         ('TOKEN Instagram', {
-            'fields': ('ig_access_token', 'ig_account_id'),
+            'fields': ('ig_access_token', 'ig_account_id', 'fb_app_id', 'fb_app_secret'),
         }),
     )
 
@@ -61,3 +61,4 @@ class FieldBidangInline(admin.TabularInline):
 class BidangUsahaAdmin(admin.ModelAdmin):
     list_display = ('nama', 'ikon')
     inlines = [FieldBidangInline]
+    

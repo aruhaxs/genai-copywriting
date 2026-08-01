@@ -29,6 +29,10 @@ class PengaturanAPI(models.Model):
     ig_access_token = models.TextField(blank=True, null=True, verbose_name="Token Akses IG")
     ig_account_id = models.CharField(max_length=100, blank=True, null=True, verbose_name="ID Akun IG")
     cloudinary_creds = models.CharField(max_length=255, blank=True, null=True, verbose_name="Kredensial Cloudinary")
+    
+    fb_app_id = models.CharField(max_length=100, blank=True, null=True, verbose_name="Facebook App ID")
+    fb_app_secret = models.CharField(max_length=255, blank=True, null=True, verbose_name="Facebook App Secret")
+
     diperbarui_pada = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -36,7 +40,7 @@ class PengaturanAPI(models.Model):
 
 class BidangUsaha(models.Model):
     nama = models.CharField(max_length=100, verbose_name="Nama Bidang Usaha")
-    ikon = models.CharField(max_length=20, default="📌", help_text="Gunakan Emoji/Ikon (Contoh: 🍔)")
+    ikon = models.CharField(max_length=20, default="📌", help_text="Gunakan Emoji/Ikon")
 
     def __str__(self):
         return self.nama

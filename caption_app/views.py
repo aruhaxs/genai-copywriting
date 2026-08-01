@@ -14,12 +14,64 @@ from django.core.files.base import ContentFile
 from django.utils.text import get_valid_filename
 from .models import GayaCopywriting, PengaturanAPI, BidangUsaha
 
+def verify_and_upgrade_token(pengaturan):
+    if not pengaturan.fb_app_id or not pengaturan.fb_app_secret:
+        return pengaturan.ig_access_token
+        
+    app_id = pengaturan.fb_app_id.strip()
+    app_secret = pengaturan.fb_app_secret.strip()
+    current_token = pengaturan.ig_access_token.strip()
+    
+    debug_url = f"https://graph.facebook.com/debug_token?input_token={current_token}&access_token={app_id}|{app_secret}"
+    try:
+        debug_res = requests.get(debug_url, timeout=10).json()
+        data = debug_res.get('data', {})
+        
+        if data.get('is_valid') and data.get('type') == 'PAGE' and data.get('expires_at') == 0:
+            return current_token 
+            
+        if not data.get('is_valid'):
+            raise Exception("Token kedaluwarsa. Silakan Generate Access Token (1 jam) baru di Graph API Explorer dan simpan di Admin.")
+            
+    except Exception as e:
+        if "kedaluwarsa" in str(e):
+            raise e
+
+    url_long = f"https://graph.facebook.com/v19.0/oauth/access_token?grant_type=fb_exchange_token&client_id={app_id}&client_secret={app_secret}&fb_exchange_token={current_token}"
+    res_long = requests.get(url_long, timeout=15).json()
+    
+    if 'error' in res_long:
+        raise Exception(f"Gagal Upgrade Token (Langkah 1): {res_long['error']['message']}")
+        
+    long_lived_token = res_long['access_token']
+    
+    url_page = f"https://graph.facebook.com/v19.0/me/accounts?fields=instagram_business_account,access_token&access_token={long_lived_token}"
+    res_page = requests.get(url_page, timeout=15).json()
+    
+    if 'error' in res_page:
+        raise Exception(f"Gagal Upgrade Token (Langkah 2): {res_page['error']['message']}")
+        
+    for page in res_page.get('data', []):
+        ig_account = page.get('instagram_business_account', {})
+        if str(ig_account.get('id')) == str(pengaturan.ig_account_id.strip()):
+            permanent_token = page.get('access_token')
+            pengaturan.ig_access_token = permanent_token
+            pengaturan.save()
+            return permanent_token
+            
+    if res_page.get('data'):
+        permanent_token = res_page['data'][0]['access_token']
+        pengaturan.ig_access_token = permanent_token
+        pengaturan.save()
+        return permanent_token
+        
+    raise Exception("Tidak menemukan Halaman Facebook yang valid.")
+
 def generate_caption(request):
     daftar_gaya = GayaCopywriting.objects.all()
     daftar_bidang = BidangUsaha.objects.prefetch_related('fields').all()
     pengaturan = PengaturanAPI.objects.first()
 
-    # Simpan nilai form dinamis ke memori agar tidak hilang
     if request.method == 'POST':
         for bidang in daftar_bidang:
             for field in bidang.fields.all():
@@ -33,12 +85,8 @@ def generate_caption(request):
     if request.method == 'POST':
         action = request.POST.get('action')
 
-        # -------------------------------------------------------------
-        # AKSI 1: POSTING KE INSTAGRAM (Mendukung Single & Carousel)
-        # -------------------------------------------------------------
         if action == 'post_ig':
             final_caption = request.POST.get('final_caption')
-            # Menerima data JSON berisi list URL gambar
             image_urls_json = request.POST.get('image_urls', '[]')
             
             try:
@@ -57,12 +105,12 @@ def generate_caption(request):
                 if not pengaturan or not pengaturan.ig_access_token or not pengaturan.ig_account_id:
                     raise ValueError("Token Instagram atau ID Akun belum diisi di Panel Admin!")
                 
+                ig_access_token = verify_and_upgrade_token(pengaturan)
+                ig_account_id = pengaturan.ig_account_id
+                
                 if not pengaturan.cloudinary_creds:
                     raise ValueError("Kredensial Cloudinary belum diisi! Masukkan di Panel Admin dengan format: CloudName,APIKey,APISecret")
 
-                ig_access_token = pengaturan.ig_access_token
-                ig_account_id = pengaturan.ig_account_id
-                
                 api_kunci_gabungan = pengaturan.cloudinary_creds.strip()
                 if "," not in api_kunci_gabungan:
                     raise ValueError("Format kunci salah! Pastikan mengisi format: CloudName,APIKey,APISecret.")
@@ -78,7 +126,6 @@ def generate_caption(request):
                 fs = FileSystemStorage()
                 trusted_image_urls = []
 
-                # STEP 1: UPLOAD SEMUA GAMBAR KE CLOUDINARY
                 for raw_url in raw_image_urls:
                     filename = raw_url.split('/')[-1].split('?')[0]
                     file_path = fs.path(filename)
@@ -109,9 +156,7 @@ def generate_caption(request):
                     
                     trusted_image_urls.append(cloud_res_json['secure_url'])
 
-                # STEP 2: POSTING KE INSTAGRAM (LOGIKA CAROUSEL VS SINGLE)
                 if len(trusted_image_urls) == 1:
-                    # LOGIKA 1 GAMBAR
                     container_payload = {
                         'image_url': trusted_image_urls[0],
                         'caption': final_caption,
@@ -126,9 +171,7 @@ def generate_caption(request):
                     creation_id = container_res['id']
                 
                 else:
-                    # LOGIKA CAROUSEL (LEBIH DARI 1 GAMBAR)
                     children_ids = []
-                    # A. Buat container item untuk setiap gambar
                     for t_url in trusted_image_urls:
                         item_payload = {
                             'image_url': t_url,
@@ -154,7 +197,6 @@ def generate_caption(request):
                     
                     creation_id = carousel_res['id']
 
-                # STEP 3: PUBLISH POSTINGAN (Single maupun Carousel)
                 publish_payload = {
                     'creation_id': creation_id,
                     'access_token': ig_access_token
@@ -171,19 +213,13 @@ def generate_caption(request):
                 context['error_ig'] = str(e)
                 context['hasil_caption'] = final_caption
                 context['image_urls_json'] = image_urls_json
-                context['image_urls'] = raw_image_urls # Untuk preview ulang di form
+                context['image_urls'] = raw_image_urls 
 
-        # -------------------------------------------------------------
-        # AKSI 2 & 3: GENERATE AWAL ATAU GENERATE ULANG
-        # -------------------------------------------------------------
         elif action in ['generate', 'regenerate']:
             bidang = request.POST.get('bidang')
             gaya_id = request.POST.get('gaya')
             
-            # JSON yang berisi array gambar (Multiple) dari Cropper JS
             cropped_images_json_str = request.POST.get('cropped_images_json', '[]')
-            
-            # Fallback untuk regenerate
             existing_image_urls_json = request.POST.get('image_urls', '[]')
 
             uploaded_file_urls = []
@@ -221,7 +257,6 @@ def generate_caption(request):
                 except Exception as e:
                     context['error'] = str(e)
 
-            # Jika URL gambar siap, eksekusi AI Generatif
             if len(uploaded_file_urls) > 0 and not context.get('error'):
                 try:
                     context['image_urls'] = uploaded_file_urls
@@ -231,7 +266,6 @@ def generate_caption(request):
 
                     detail_info = ""
                     for key, value in request.POST.items():
-                        # Exclude sistem & form array variables
                         if key not in ['csrfmiddlewaretoken', 'bidang', 'gaya', 'action', 'image_urls', 'final_caption', 'gambar', 'cropped_images_json'] and value.strip() != "":
                             label = key.replace('_', ' ').title()
                             detail_info += f"- {label}: {value}\n"
