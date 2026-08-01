@@ -1,60 +1,129 @@
-# ✨ AI Copywriting Studio
+# AI Copywriting & Auto-Post IG Studio
 
-Aplikasi web berbasis Django yang terintegrasi dengan Google Gemini API untuk membantu *copywriter* dan pemilik usaha membuat *caption* Instagram secara otomatis, cepat, dan profesional.
+Aplikasi web berbasis Django untuk membantu pengguna membuat caption Instagram menggunakan AI dan mempublikasikan konten secara langsung ke Instagram.
 
-## 🚀 Fitur Utama
+Mendukung Google Gemini dan Groq untuk pembuatan caption, serta Meta Graph API dan Cloudinary untuk proses publikasi dan pengelolaan media.
 
-*   **20+ Pilihan Bidang Usaha:** Form dinamis menggunakan JavaScript yang otomatis menyesuaikan isian berdasarkan bidang yang dipilih (Kuliner, Fashion, Jasa, Properti, dll).
-*   **Gaya Penulisan Dinamis (Database-Driven):** Admin dapat menambahkan, mengedit, atau menghapus instruksi (*prompt*) gaya penulisan secara bebas melalui panel Admin Django (misal: Casual, Profesional, Persuasif).
-*   **3 Alternatif Caption AI:** Terintegrasi dengan model AI terbaru (Gemini 1.5 Flash) yang dikonfigurasi secara ketat untuk langsung memberikan 3 pilihan *caption* yang rapi, bersih, dan siap disalin.
+## Fitur
 
-## 🛠️ Teknologi yang Digunakan
+* Generate caption menggunakan Google Gemini atau Groq.
+* Pilihan gaya penulisan yang dapat dikelola melalui Django Admin.
+* Form dinamis berdasarkan bidang usaha.
+* Upload dan crop gambar menggunakan Cropper.js.
+* Publikasi otomatis ke Instagram Business.
+* Mendukung Single Image dan Carousel.
+* Penyimpanan media menggunakan Cloudinary.
+* Pengelolaan API Key dan kredensial melalui Django Admin.
 
-*   **Backend:** Python 3, Django 5
-*   **Frontend:** HTML5, CSS3, Vanilla JavaScript
-*   **AI Engine:** Google Generative AI SDK
-*   **Database:** SQLite (Bawaan Django)
+## Teknologi
 
----
+* Python 3
+* Django 5
+* Google Gemini
+* Groq
+* Meta Graph API
+* Cloudinary
+* Cropper.js
+* Pillow
+* SQLite
+* HTML, CSS, JavaScript
 
-## ⚙️ Cara Menjalankan Proyek (Panduan Kolaborator)
+## Instalasi
 
-Ikuti langkah-langkah di bawah ini untuk menjalankan dan mengembangkan proyek ini di komputer lokalmu.
+Clone repository:
 
-### 1. Clone Repositori
-Buka terminal/CMD dan jalankan perintah berikut untuk mengunduh kode:
 ```bash
-git clone [https://github.com/aruhaxs/genai-copywriting.git](https://github.com/aruhaxs/genai-copywriting.git)
+git clone https://github.com/aruhaxs/genai-copywriting.git
 cd genai-copywriting
 ```
 
-### 2. Instal Library yang Dibutuhkan
-Pastikan Python sudah terinstal, lalu jalankan:
+Buat virtual environment:
+
 ```bash
-pip install django google-generativeai python-dotenv
+python -m venv venv
 ```
 
-### 3. Konfigurasi API Key (Wajib)
-Proyek ini membutuhkan API Key dari Google Gemini agar AI bisa bekerja.
-1. Buat file baru bernama persis `.env` di folder utama proyek (sejajar dengan file `manage.py`).
-2. Buka file `.env` tersebut dan isi dengan kode berikut (tanpa tanda kutip):
-```text
-GEMINI_API_KEY=masukkan_api_key_kamu_di_sini
+Aktifkan virtual environment.
+
+Windows:
+
+```bash
+venv\Scripts\activate
 ```
 
-### 4. Persiapkan Database & Akun Admin
-Jalankan migrasi agar struktur database terbentuk, lalu buat akun admin untuk mengelola "Gaya Penulisan":
+Linux/macOS:
+
+```bash
+source venv/bin/activate
+```
+
+Install dependency:
+
+```bash
+pip install -r requirements.txt
+```
+
+Jalankan migration:
+
 ```bash
 python manage.py migrate
+```
+
+Buat akun administrator:
+
+```bash
 python manage.py createsuperuser
 ```
-*(Ikuti instruksi di layar untuk mengisi username, email, dan password admin).*
 
-### 5. Jalankan Server Lokal
+Jalankan aplikasi:
+
 ```bash
 python manage.py runserver
 ```
 
-### 6. Mulai Menggunakan
-*   **Halaman Utama (Generator):** Buka `http://127.0.0.1:8000/` di browsermu.
-*   **Halaman Admin (Kelola Gaya):** Buka `http://127.0.0.1:8000/admin/` dan login menggunakan akun yang baru saja dibuat untuk menambahkan jenis gaya *copywriting*.
+Akses aplikasi melalui:
+
+```text
+http://127.0.0.1:8000/
+```
+
+Panel admin:
+
+```text
+http://127.0.0.1:8000/admin/
+```
+
+## Konfigurasi
+
+Konfigurasi API dan kredensial dapat dilakukan melalui Django Admin.
+
+Beberapa konfigurasi yang diperlukan:
+
+* Gemini API Key
+* Groq API Key
+* Cloudinary Credentials
+* Facebook App ID
+* Facebook App Secret
+* Instagram Account ID
+* Instagram Access Token
+
+## Penggunaan
+
+1. Upload satu atau beberapa gambar.
+2. Sesuaikan gambar menggunakan fitur crop.
+3. Pilih bidang usaha.
+4. Isi informasi konten.
+5. Pilih gaya penulisan.
+6. Generate caption.
+7. Periksa hasil caption.
+8. Publikasikan ke Instagram.
+
+## Keamanan
+
+Jangan menyimpan API Key, Access Token, App Secret, atau kredensial lainnya secara langsung di repository.
+
+Gunakan environment variable atau konfigurasi Django Admin dan pastikan kredensial sensitif tidak di-*commit* ke Git.
+
+## Repository
+
+https://github.com/aruhaxs/genai-copywriting.git
