@@ -4,6 +4,8 @@ import hashlib
 import requests
 import urllib.parse
 import io
+import base64
+import json
 from PIL import Image
 import google.generativeai as genai
 from django.shortcuts import render
@@ -17,6 +19,7 @@ def generate_caption(request):
     daftar_bidang = BidangUsaha.objects.prefetch_related('fields').all()
     pengaturan = PengaturanAPI.objects.first()
 
+    # Simpan nilai form dinamis ke memori agar tidak hilang
     if request.method == 'POST':
         for bidang in daftar_bidang:
             for field in bidang.fields.all():
@@ -30,11 +33,20 @@ def generate_caption(request):
     if request.method == 'POST':
         action = request.POST.get('action')
 
+        # -------------------------------------------------------------
+        # AKSI 1: POSTING KE INSTAGRAM (Mendukung Single & Carousel)
+        # -------------------------------------------------------------
         if action == 'post_ig':
             final_caption = request.POST.get('final_caption')
-            raw_image_url = request.POST.get('image_url')
+            # Menerima data JSON berisi list URL gambar
+            image_urls_json = request.POST.get('image_urls', '[]')
             
-            if not raw_image_url or raw_image_url.strip() == "":
+            try:
+                raw_image_urls = json.loads(image_urls_json)
+            except:
+                raw_image_urls = []
+
+            if not raw_image_urls or len(raw_image_urls) == 0:
                 context['error_ig'] = "PENTING: Sistem Instagram tidak mengizinkan postingan teks saja. Anda wajib menggunakan gambar."
                 context['hasil_caption'] = final_caption
                 return render(request, 'index.html', context)
@@ -53,59 +65,96 @@ def generate_caption(request):
                 
                 api_kunci_gabungan = pengaturan.cloudinary_creds.strip()
                 if "," not in api_kunci_gabungan:
-                    raise ValueError("Format kunci salah! Pastikan mengisi dengan format: CloudName,APIKey,APISecret (dipisahkan koma tanpa spasi).")
+                    raise ValueError("Format kunci salah! Pastikan mengisi format: CloudName,APIKey,APISecret.")
                 
                 kredensial = api_kunci_gabungan.split(',')
                 if len(kredensial) != 3:
-                    raise ValueError("Format kunci tidak lengkap! Harus berisi 3 bagian: CloudName, APIKey, dan APISecret.")
+                    raise ValueError("Format kunci tidak lengkap!")
                 
                 cloud_name = kredensial[0].strip()
                 cloudinary_api_key = kredensial[1].strip()
                 cloudinary_api_secret = kredensial[2].strip()
 
-                filename = raw_image_url.split('/')[-1].split('?')[0]
                 fs = FileSystemStorage()
-                file_path = fs.path(filename)
-                
-                timestamp = str(int(time.time()))
-                string_to_sign = f"timestamp={timestamp}{cloudinary_api_secret}"
-                signature = hashlib.sha1(string_to_sign.encode('utf-8')).hexdigest()
+                trusted_image_urls = []
 
-                payload = {
-                    'api_key': cloudinary_api_key,
-                    'timestamp': timestamp,
-                    'signature': signature
-                }
-                
-                with open(file_path, "rb") as file:
-                    cloudinary_response = requests.post(
-                        f"https://api.cloudinary.com/v1_1/{cloud_name}/image/upload",
-                        data=payload,
-                        files={"file": file},
-                        timeout=20
-                    )
-                
-                cloud_res_json = cloudinary_response.json()
-                
-                if not cloudinary_response.ok:
-                    err_msg = cloud_res_json.get('error', {}).get('message', 'Ditolak oleh Cloudinary.')
-                    raise Exception(f"Gagal mengunggah gambar ke Cloudinary: {err_msg}")
-                
-                trusted_image_url = cloud_res_json['secure_url']
+                # STEP 1: UPLOAD SEMUA GAMBAR KE CLOUDINARY
+                for raw_url in raw_image_urls:
+                    filename = raw_url.split('/')[-1].split('?')[0]
+                    file_path = fs.path(filename)
+                    
+                    timestamp = str(int(time.time()))
+                    string_to_sign = f"timestamp={timestamp}{cloudinary_api_secret}"
+                    signature = hashlib.sha1(string_to_sign.encode('utf-8')).hexdigest()
 
-                container_payload = {
-                    'image_url': trusted_image_url,
-                    'caption': final_caption,
-                    'access_token': ig_access_token
-                }
-                container_req = requests.post(f"{graph_url}/{ig_account_id}/media", data=container_payload, timeout=20)
-                container_res = container_req.json()
+                    payload = {
+                        'api_key': cloudinary_api_key,
+                        'timestamp': timestamp,
+                        'signature': signature
+                    }
+                    
+                    with open(file_path, "rb") as file:
+                        cloudinary_response = requests.post(
+                            f"https://api.cloudinary.com/v1_1/{cloud_name}/image/upload",
+                            data=payload,
+                            files={"file": file},
+                            timeout=20
+                        )
+                    
+                    cloud_res_json = cloudinary_response.json()
+                    
+                    if not cloudinary_response.ok:
+                        err_msg = cloud_res_json.get('error', {}).get('message', 'Ditolak oleh Cloudinary.')
+                        raise Exception(f"Gagal mengunggah gambar ke Cloudinary: {err_msg}")
+                    
+                    trusted_image_urls.append(cloud_res_json['secure_url'])
+
+                # STEP 2: POSTING KE INSTAGRAM (LOGIKA CAROUSEL VS SINGLE)
+                if len(trusted_image_urls) == 1:
+                    # LOGIKA 1 GAMBAR
+                    container_payload = {
+                        'image_url': trusted_image_urls[0],
+                        'caption': final_caption,
+                        'access_token': ig_access_token
+                    }
+                    container_req = requests.post(f"{graph_url}/{ig_account_id}/media", data=container_payload, timeout=20)
+                    container_res = container_req.json()
+                    
+                    if 'error' in container_res:
+                        raise Exception(f"Gagal membuat kontainer IG: {container_res['error']['message']}")
+                    
+                    creation_id = container_res['id']
                 
-                if 'error' in container_res:
-                    raise Exception(f"Gagal membuat kontainer IG: {container_res['error']['message']}")
-                
-                creation_id = container_res['id']
-                
+                else:
+                    # LOGIKA CAROUSEL (LEBIH DARI 1 GAMBAR)
+                    children_ids = []
+                    # A. Buat container item untuk setiap gambar
+                    for t_url in trusted_image_urls:
+                        item_payload = {
+                            'image_url': t_url,
+                            'is_carousel_item': 'true',
+                            'access_token': ig_access_token
+                        }
+                        item_req = requests.post(f"{graph_url}/{ig_account_id}/media", data=item_payload, timeout=20)
+                        item_res = item_req.json()
+                        if 'error' in item_res:
+                            raise Exception(f"Gagal membuat item carousel: {item_res['error']['message']}")
+                        children_ids.append(item_res['id'])
+                    
+                    carousel_payload = {
+                        'media_type': 'CAROUSEL',
+                        'children': ','.join(children_ids),
+                        'caption': final_caption,
+                        'access_token': ig_access_token
+                    }
+                    carousel_req = requests.post(f"{graph_url}/{ig_account_id}/media", data=carousel_payload, timeout=20)
+                    carousel_res = carousel_req.json()
+                    if 'error' in carousel_res:
+                        raise Exception(f"Gagal merakit Carousel IG: {carousel_res['error']['message']}")
+                    
+                    creation_id = carousel_res['id']
+
+                # STEP 3: PUBLISH POSTINGAN (Single maupun Carousel)
                 publish_payload = {
                     'creation_id': creation_id,
                     'access_token': ig_access_token
@@ -116,78 +165,83 @@ def generate_caption(request):
                 if 'error' in publish_res:
                     raise Exception(f"Gagal mempublikasikan ke IG: {publish_res['error']['message']}")
                 
-                context['success_msg'] = "🎉 Sukses! Postingan berhasil diunggah ke Instagram! Form telah dibersihkan."
+                context['success_msg'] = "🎉 Sukses! Postingan Anda berhasil diunggah ke Instagram!"
                 
             except Exception as e:
                 context['error_ig'] = str(e)
                 context['hasil_caption'] = final_caption
-                context['image_url'] = raw_image_url
+                context['image_urls_json'] = image_urls_json
+                context['image_urls'] = raw_image_urls # Untuk preview ulang di form
 
+        # -------------------------------------------------------------
+        # AKSI 2 & 3: GENERATE AWAL ATAU GENERATE ULANG
+        # -------------------------------------------------------------
         elif action in ['generate', 'regenerate']:
             bidang = request.POST.get('bidang')
             gaya_id = request.POST.get('gaya')
-            gambar = request.FILES.get('gambar')
-            existing_image_url = request.POST.get('image_url')
+            
+            # JSON yang berisi array gambar (Multiple) dari Cropper JS
+            cropped_images_json_str = request.POST.get('cropped_images_json', '[]')
+            
+            # Fallback untuk regenerate
+            existing_image_urls_json = request.POST.get('image_urls', '[]')
 
-            uploaded_file_url = None
+            uploaded_file_urls = []
 
             if bidang and gaya_id:
                 try:
                     if action == 'generate':
-                        if not gambar:
-                            raise Exception("Harap unggah gambar terlebih dahulu untuk memulai!")
-                            
-                        allowed_extensions = ['.jpg', '.jpeg', '.png']
-                        ext = os.path.splitext(gambar.name)[1].lower()
-                        
-                        if ext not in allowed_extensions:
-                            raise Exception(f"Format gambar '{ext}' tidak dikenali. Harap unggah foto .jpg, .jpeg, atau .png!")
-                            
-                        img = Image.open(gambar)
-                        if img.mode != 'RGB':
-                            img = img.convert('RGB')
-                        
-                        max_width = 1080
-                        if img.width > max_width:
-                            ratio = max_width / float(img.width)
-                            new_height = int((float(img.height) * float(ratio)))
-                            img = img.resize((max_width, new_height), Image.Resampling.LANCZOS)
-                        
-                        base_name = os.path.splitext(get_valid_filename(gambar.name))[0]
-                        meta_safe_filename = f"{base_name}_igready.jpg"
-                        
-                        img_io = io.BytesIO()
-                        img.save(img_io, format='JPEG', quality=85)
-                        img_io.seek(0)
+                        cropped_images_data = json.loads(cropped_images_json_str)
+                        if not cropped_images_data or len(cropped_images_data) == 0:
+                            raise Exception("Harap unggah minimal 1 gambar terlebih dahulu untuk memulai!")
                         
                         fs = FileSystemStorage()
-                        filename = fs.save(meta_safe_filename, ContentFile(img_io.read()))
-                        uploaded_file_url = request.build_absolute_uri(fs.url(filename))
-                    
+                        for idx, img_b64 in enumerate(cropped_images_data):
+                            if img_b64.strip() != "":
+                                format, imgstr = img_b64.split(';base64,')
+                                image_data = base64.b64decode(imgstr)
+                                img = Image.open(io.BytesIO(image_data))
+                                
+                                if img.mode != 'RGB':
+                                    img = img.convert('RGB')
+                                    
+                                img_io = io.BytesIO()
+                                img.save(img_io, format='JPEG', quality=90)
+                                img_io.seek(0)
+                                
+                                meta_safe_filename = f"igready_post_{int(time.time())}_{idx}.jpg"
+                                filename = fs.save(meta_safe_filename, ContentFile(img_io.read()))
+                                uploaded_file_urls.append(request.build_absolute_uri(fs.url(filename)))
+
                     elif action == 'regenerate':
-                        if not existing_image_url:
+                        uploaded_file_urls = json.loads(existing_image_urls_json)
+                        if not uploaded_file_urls:
                             raise Exception("Data gambar hilang, silakan mulai ulang proses.")
-                        uploaded_file_url = existing_image_url
 
                 except Exception as e:
                     context['error'] = str(e)
 
-            if uploaded_file_url and not context.get('error'):
+            # Jika URL gambar siap, eksekusi AI Generatif
+            if len(uploaded_file_urls) > 0 and not context.get('error'):
                 try:
-                    context['image_url'] = uploaded_file_url
+                    context['image_urls'] = uploaded_file_urls
+                    context['image_urls_json'] = json.dumps(uploaded_file_urls)
+                    
                     gaya_terpilih = GayaCopywriting.objects.get(id=gaya_id)
 
                     detail_info = ""
                     for key, value in request.POST.items():
-                        if key not in ['csrfmiddlewaretoken', 'bidang', 'gaya', 'action', 'image_url', 'final_caption', 'gambar'] and value.strip() != "":
+                        # Exclude sistem & form array variables
+                        if key not in ['csrfmiddlewaretoken', 'bidang', 'gaya', 'action', 'image_urls', 'final_caption', 'gambar', 'cropped_images_json'] and value.strip() != "":
                             label = key.replace('_', ' ').title()
                             detail_info += f"- {label}: {value}\n"
 
                     prompt = f"Sebagai seorang copywriter, buat caption Instagram menarik untuk bisnis {bidang}.\n\n"
                     prompt += f"Detail info:\n{detail_info}\n\nInstruksi Gaya:\n{gaya_terpilih.prompt}\n\n"
-                    prompt += "Berikan SATU hasil akhir caption saja (tidak perlu alternatif). Jangan pakai teks struktur [HEADER]. Berikan call-to-action dan hashtag."
+                    prompt += "Berikan SATU hasil akhir caption saja (tidak perlu alternatif). Jangan pakai teks struktur [HEADER]. Berikan call-to-action dan hashtag. PENTING: JANGAN gunakan format markdown seperti bintang (**) untuk menebalkan teks, berikan teks polos biasa tanpa simbol bintang."
 
                     provider = pengaturan.ai_provider if pengaturan else 'gemini'
+                    hasil_raw = ""
 
                     if provider == 'gemini':
                         if not pengaturan or not pengaturan.gemini_api_key:
@@ -196,7 +250,7 @@ def generate_caption(request):
                         genai.configure(api_key=pengaturan.gemini_api_key)
                         model = genai.GenerativeModel(nama_model)
                         response = model.generate_content(prompt)
-                        context['hasil_caption'] = response.text
+                        hasil_raw = response.text
 
                     elif provider == 'groq':
                         if not pengaturan or not pengaturan.groq_api_key:
@@ -222,7 +276,9 @@ def generate_caption(request):
                         if not res.ok:
                             raise Exception(res_json.get('error', {}).get('message', 'Error pada server Groq.'))
                             
-                        context['hasil_caption'] = res_json['choices'][0]['message']['content']
+                        hasil_raw = res_json['choices'][0]['message']['content']
+
+                    context['hasil_caption'] = hasil_raw.replace('**', '')
 
                 except Exception as e:
                     context['error'] = f"Gagal menghasilkan caption ({provider.upper()} - Model: {nama_model}): {str(e)}"
