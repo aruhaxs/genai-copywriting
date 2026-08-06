@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv #Tambahan Untuk API Call
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -10,7 +11,13 @@ SECRET_KEY = 'django-insecure-g&3x#_!@#$%^&*()_+-='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*', '.ngrok-free.app']
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.ngrok-free.dev',
+    'https://*.ngrok-free.app',
+    'https://*.ngrok.io',
+]
 
 # Application definition
 INSTALLED_APPS = [
@@ -93,9 +100,27 @@ STATIC_URL = '/static/'
 # TAMBAHAN: Menentukan lokasi pengumpulan file statis untuk production
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_PORT = True
+
 # Pengaturan Media (Untuk menyimpan gambar yang diunggah)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+load_dotenv()
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+
+GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+GROQ_MODEL = os.getenv("GROQ_MODEL", "llama3-8b-8192")
+
+CLOUDINARY_CREDS = os.getenv("CLOUDINARY_CREDS", "")
+
+FB_APP_ID = os.getenv("FB_APP_ID", "")
+FB_APP_SECRET = os.getenv("FB_APP_SECRET", "")
+IG_ACCOUNT_ID = os.getenv("IG_ACCOUNT_ID", "")
+IG_ACCESS_TOKEN = os.getenv("IG_ACCESS_TOKEN", "")
