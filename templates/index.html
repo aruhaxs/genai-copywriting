@@ -1,3 +1,4 @@
+{% load form_extras %}
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -17,12 +18,42 @@
             --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
             --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
             --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-            --shadow-float: 0 25px 50px -12px rgba(0, 0, 0, 0.15); /* Bayangan estetik untuk mockup */
+            --shadow-float: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
         }
         
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%); color: var(--text-main); margin: 0; padding: 20px; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; }
-        .container { background: var(--card-bg); width: 100%; max-width: 900px; padding: 40px; border-radius: 24px; box-shadow: var(--shadow-lg); margin-top: 20px; margin-bottom: 40px; box-sizing: border-box; }
+        .container { background: var(--card-bg); width: 100%; max-width: 100dvw; padding: 40px; border-radius: 24px; box-shadow: var(--shadow-lg); margin-top: 20px; margin-bottom: 40px; box-sizing: border-box; }
         .header-section { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 15px; }
+
+        /* --- Header actions: dirapikan jadi 2 grup, konsisten ukurannya --- */
+        .header-actions { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        .header-group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .pill { display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 14px; border-radius: 12px; font-size: 13px; font-weight: 600; text-decoration: none; box-sizing: border-box; border: 1px solid transparent; cursor: pointer; white-space: nowrap; }
+        .pill-muted { background: #f1f5f9; color: var(--text-muted); }
+        .pill-warning { background: #fef3c7; border-color: #fde68a; color: #92400e; }
+        .pill-dark { background-color: #1e293b; color: white; }
+        .pill-dark:hover { background-color: #0f172a; }
+        .pill-ig { background: #e0e7ff; border-color: #c7d2fe; color: #4338ca; }
+        .pill-ig:hover { background: #c7d2fe; }
+
+        /* --- Dropdown reusable (dipakai untuk menu Akun & menu Instagram) --- */
+        .dropdown { position: relative; }
+        .dropdown-toggle .chevron { transition: transform 0.2s; }
+        .dropdown-toggle.open .chevron { transform: rotate(180deg); }
+        .dropdown-panel { display: none; position: absolute; top: calc(100% + 8px); right: 0; min-width: 220px; background: #fff; border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow-md); padding: 8px; z-index: 50; }
+        .dropdown-panel.open { display: block; }
+        .dropdown-panel-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: #94a3b8; padding: 6px 8px; }
+        .dropdown-item { display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 10px; font-size: 13px; color: #334155; text-decoration: none; }
+        .dropdown-item + .dropdown-item { margin-top: 2px; }
+        .dropdown-item.active { background: #f0fdf4; color: #15803d; font-weight: 700; }
+        .dropdown-item .dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; flex-shrink: 0; }
+        .dropdown-item-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .dropdown-item .badge { margin-left: auto; font-size: 10px; background: #dcfce7; color: #15803d; padding: 2px 6px; border-radius: 6px; font-weight: 700; flex-shrink: 0; }
+        .dropdown-item-static { cursor: default; color: #64748b; }
+        a.dropdown-item:hover { background: #f1f5f9; }
+        .dropdown-item-danger { color: #ef4444; font-weight: 600; }
+        a.dropdown-item-danger:hover { background: #fef2f2; }
+        .dropdown-divider { height: 1px; background: var(--border); margin: 6px 4px; }
         h1 { background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.5px; }
         .btn-admin { background-color: #1e293b; color: white; padding: 10px 18px; border-radius: 12px; text-decoration: none; font-size: 14px; font-weight: 600; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 6px; }
         .btn-admin:hover { background-color: #0f172a; transform: translateY(-2px); box-shadow: var(--shadow-md); }
@@ -33,15 +64,12 @@
         .selection-title { font-size: 17px; font-weight: 700; margin-bottom: 20px; color: #1e293b; display: flex; align-items: center; gap: 10px; }
         .selection-title::before { content: ""; display: inline-block; width: 8px; height: 24px; background: var(--primary); border-radius: 4px; }
         
-        /* Input File Hidden */
         input[type="file"] { display: none; }
 
-        /* UI Cropper Overlay */
         #crop-container { display: none; position: relative; margin-top: 15px; border-radius: 12px; overflow: hidden; background: #000; box-shadow: var(--shadow-md); height: 500px;}
         .img-preview-box { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
         .img-preview-box img { max-width: 100%; max-height: 100%; display: block; }
         
-        /* Floating Ratio & Zoom Menu */
         .ratio-overlay-menu { position: absolute; bottom: 20px; left: 20px; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); border-radius: 16px; padding: 12px; display: flex; flex-direction: column; gap: 8px; z-index: 10; border: 1px solid rgba(255,255,255,0.1); }
         .btn-ratio { background: transparent; color: #cbd5e1; border: none; padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
         .btn-ratio:hover, .btn-ratio.active { background: rgba(255,255,255,0.15); color: white; }
@@ -51,7 +79,6 @@
         .ri-16-9 { width: 16px; height: 10px; }
         .ri-free { width: 15px; height: 15px; border-style: dashed; }
 
-        /* Multi-Image Thumbnail Gallery */
         .thumbnail-gallery { display: flex; gap: 10px; margin-top: 15px; overflow-x: auto; padding-bottom: 5px; }
         .thumb-item { width: 70px; height: 70px; border-radius: 12px; overflow: hidden; border: 3px solid transparent; cursor: pointer; position: relative; flex-shrink: 0; background: #e2e8f0; transition: border 0.3s ease; }
         .thumb-item.active { border-color: var(--primary); }
@@ -60,15 +87,14 @@
         .thumb-add-btn:hover { border-color: var(--primary); color: var(--primary); background: #e0e7ff; }
         .thumb-remove { position: absolute; top: 2px; right: 2px; background: rgba(0,0,0,0.6); color: white; border-radius: 50%; width: 18px; height: 18px; display: flex; justify-content: center; align-items: center; font-size: 10px; font-weight: bold; cursor: pointer; }
 
-        /* Instagram Simulation Preview (MOCKUP ESTETIK) */
         .ig-preview-container { 
             border: 1px solid var(--border); 
-            border-radius: 20px; /* Sudut lebih membulat seperti HP */
+            border-radius: 20px; 
             overflow: hidden; 
             background: white; 
             max-width: 420px; 
             margin: 0 auto 30px auto; 
-            box-shadow: var(--shadow-float); /* Efek melayang */
+            box-shadow: var(--shadow-float); 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
             text-align: left;
         }
@@ -78,13 +104,11 @@
         .ig-avatar-inner { width: 100%; height: 100%; background: #fff; border-radius: 50%; border: 1px solid white; display: flex; justify-content: center; align-items: center; color: #ccc; }
         .ig-username { font-size: 14px; font-weight: 600; color: #262626; }
         
-        /* Background area gambar IG (Sela-sela gambar harus gelap/hitam) */
         .ig-carousel-wrapper { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -ms-overflow-style: none; scrollbar-width: none; background: #121212; max-height: 550px;} 
         .ig-carousel-wrapper::-webkit-scrollbar { display: none; }
         .ig-carousel-item { flex: 0 0 100%; scroll-snap-align: center; display: flex; justify-content: center; align-items: center; }
         .ig-carousel-item img { width: 100%; max-height: 550px; object-fit: contain; }
         
-        /* Titik Indikator di BARIS SENDIRI */
         .ig-carousel-indicators-wrapper { display: flex; justify-content: center; padding-top: 15px; margin-bottom: -2px; background: white; }
         .ig-carousel-indicators { display: flex; gap: 5px; }
         .ig-dot { width: 6px; height: 6px; border-radius: 50%; background: #cbd5e1; transition: background-color 0.3s; }
@@ -98,7 +122,6 @@
         .ig-caption-box { padding: 0 16px 16px 16px; font-size: 14px; color: #262626; line-height: 1.5; white-space: pre-wrap; background: white; }
         .ig-caption-box b { font-weight: 600; margin-right: 4px;}
 
-        /* Pills & Form Dynamics */
         .pills-container { display: flex; flex-wrap: wrap; gap: 10px; }
         .pill-label { cursor: pointer; }
         .pill-label input[type="radio"] { display: none; }
@@ -111,10 +134,11 @@
         .form-title { font-size: 15px; font-weight: 700; margin-bottom: 20px; color: var(--primary); border-bottom: 2px solid #e0e7ff; padding-bottom: 10px; }
         .form-group { margin-bottom: 16px; }
         .form-group label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 600; color: #334155; }
-        .form-group input { width: 100%; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 10px; box-sizing: border-box; font-family: inherit; font-size: 14px; background: white; transition: all 0.3s; }
-        .form-group input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 10px; box-sizing: border-box; font-family: inherit; font-size: 14px; background: white; transition: all 0.3s; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        .form-group select { cursor: pointer; }
 
-        /* Buttons & Utility */
         .btn-submit { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); display: flex; justify-content: center; align-items: center; gap: 8px; }
         .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4); }
         .edit-caption { width: 100%; min-height: 200px; padding: 16px; border: 1px solid #cbd5e1; border-radius: 12px; box-sizing: border-box; font-family: inherit; font-size: 14px; line-height: 1.6; resize: vertical; background: #ffffff; transition: all 0.3s; margin-top: 10px; box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.02);}
@@ -141,26 +165,126 @@
             #crop-container { height: 350px; }
             .ratio-overlay-menu { bottom: 10px; left: 10px; padding: 8px; }
             .btn-ratio { padding: 8px 10px; font-size: 12px; }
+
+            /* --- Header actions (dropdown akun & IG) di mobile --- */
+            .header-actions { flex-direction: column; align-items: stretch; width: 100%; gap: 10px; }
+            .header-group { width: 100%; gap: 8px; }
+            .header-group > .pill,
+            .header-group > .dropdown { flex: 1 1 0; min-width: 0; }
+            .dropdown-toggle { width: 100%; justify-content: center; }
+            .dropdown-toggle span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 40vw; }
+
+            /* Dropdown panel jadi inline (dorong konten ke bawah), bukan
+               melayang absolute -- supaya tidak ada risiko overflow layar
+               berapa pun lebar HP-nya & posisi tombolnya di mana pun. */
+            .dropdown-panel { position: static; width: 100%; margin-top: 8px; box-shadow: none; }
+
+            /* Pesan peringatan teksnya panjang -- biarkan wrap & tinggi menyesuaikan */
+            .pill-warning { white-space: normal; height: auto; padding: 10px 14px; line-height: 1.4; }
         }
+
+        /* --- Overlay loading saat generate/regenerate/post --- */
+        #loading-overlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.72); backdrop-filter: blur(3px); z-index: 999; align-items: center; justify-content: center; }
+        #loading-overlay.active { display: flex; }
+        .loading-card { background: #fff; border-radius: 20px; padding: 36px 32px; width: 300px; text-align: center; box-shadow: var(--shadow-md); }
+        .loading-spinner { width: 44px; height: 44px; margin: 0 auto 18px; border-radius: 50%; border: 4px solid #e0e7ff; border-top-color: var(--primary); animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-title { font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 14px; }
+        .loading-steps { position: relative; height: 22px; }
+        .loading-step { position: absolute; top: 0; left: 0; width: 100%; font-size: 13px; color: var(--text-muted); opacity: 0; transform: translateY(6px); transition: opacity 0.4s ease, transform 0.4s ease; }
+        .loading-step.active { opacity: 1; transform: translateY(0); }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header-section">
-            <h1>✨ Auto-Post IG Studio</h1>
-            <a href="/admin/" target="_blank" class="btn-admin">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"></path><path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"></path></svg>
-                Panel Admin
+    <h1>✨ Auto-Post IG Studio</h1>
+    <div class="header-actions">
+
+        {% if pengguna %}
+        <div class="header-group">
+            <!-- DROPDOWN INFO AKUN PENGGUNA (ganti tombol Logout polos) -->
+            <div class="dropdown">
+                <button type="button" class="pill pill-muted dropdown-toggle" onclick="toggleDropdown(event)">
+                    <span>Halo, {{ pengguna.nama }}</span>
+                    <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+                <div class="dropdown-panel">
+                    <div class="dropdown-panel-title">Akun Anda</div>
+                    <div class="dropdown-item dropdown-item-static">
+                        <span class="dropdown-item-name">{{ pengguna.email }}</span>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a href="{% url 'logout_user' %}" class="dropdown-item dropdown-item-danger">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="header-group">
+            {% if daftar_akun_ig %}
+            <!-- DROPDOWN INFO AKUN INSTAGRAM YANG DIKELOLA -->
+            <div class="dropdown">
+                <button type="button" class="pill pill-ig dropdown-toggle" onclick="toggleDropdown(event)">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Instagram_logo_2022.svg/960px-Instagram_logo_2022.svg.png?_=20220518162235" alt="" width="12px"><span>{% if akun_ig_terpilih %}{{ akun_ig_terpilih.nama_akun }}{% else %}Pilih akun{% endif %}</span>
+                    <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+                <div class="dropdown-panel">
+                    <div class="dropdown-panel-title">Akun Instagram yang dikelola</div>
+                    {% for akun in daftar_akun_ig %}
+                    <div class="dropdown-item {% if akun_ig_terpilih and akun.pk == akun_ig_terpilih.pk %}active{% endif %}">
+                        <span class="dot"></span>
+                        <span class="dropdown-item-name">{{ akun.nama_akun }}</span>
+                        {% if akun_ig_terpilih and akun.pk == akun_ig_terpilih.pk %}<span class="badge">Aktif</span>{% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% else %}
+            <span class="pill pill-warning">⚠️ Belum ada akun Instagram yang ditugaskan ke Anda. Hubungi Admin.</span>
+            {% endif %}
+
+            <a href="/admin/" target="_blank" class="pill pill-dark">
+                Admin
             </a>
         </div>
-        <p class="subtitle">Platform AI otomatis untuk merangkai copywriting Instagram dan terbit instan.</p>
+
+    </div>
+</div>
+        <p class="subtitle">Platform AI untuk merangkai caption Instagram dan terbit instan.</p>
 
         <!-- NOTIFIKASI -->
         {% if error %}
             <div class="alert-box error-box">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                <div>{{ error }}</div>
+                <div>
+                    {{ error }}
+                    {% if retry_after %}
+                        <br>Coba lagi dalam <b id="retry-countdown">{{ retry_after }}</b> detik.
+                    {% endif %}
+                </div>
             </div>
+            {% if retry_after %}
+            <script>
+                (function () {
+                    let sisaDetik = {{ retry_after }};
+                    const el = document.getElementById('retry-countdown');
+                    const wrapper = el ? el.parentElement : null;
+                    const timer = setInterval(function () {
+                        sisaDetik -= 1;
+                        if (sisaDetik <= 0) {
+                            clearInterval(timer);
+                            if (wrapper) wrapper.innerHTML = '✅ Anda bisa coba generate lagi sekarang.';
+                        } else if (el) {
+                            el.textContent = sisaDetik;
+                        }
+                    }, 1000);
+                })();
+            </script>
+            {% endif %}
         {% endif %}
         
         {% if error_ig %}
@@ -178,6 +302,7 @@
         {% endif %}
 
         <form method="POST" enctype="multipart/form-data" id="main-form">
+            <!-- CSRF TOKEN SELALU ADA DI DALAM FORM -->
             {% csrf_token %}
             
             <!-- INPUT HIDDEN DATA GAMBAR MULTIPLE -->
@@ -200,9 +325,7 @@
                     </button>
 
                     <!-- AREA THUMBNAIL (Bawah) -->
-                    <div class="thumbnail-gallery" id="thumb-gallery" style="display:none;">
-                        <!-- JS akan menyuntikkan thumbnail ke sini -->
-                    </div>
+                    <div class="thumbnail-gallery" id="thumb-gallery" style="display:none;"></div>
 
                     <!-- AREA CROPPER DENGAN OVERLAY ZOOM & RASIO -->
                     <div id="crop-container">
@@ -239,11 +362,10 @@
                     </div>
                 </div>
             
-            <!-- LANGKAH 2: PREVIEW INSTAGRAM (JIKA ADA HASIL) -->
+            <!-- LANGKAH 2: PREVIEW INSTAGRAM & PUBLISH (JIKA ADA HASIL) -->
             {% else %}
                 <div class="step-indicator" style="background: #dcfce7; color: #166534;">Langkah 2: Tinjau & Edit Konten</div>
                 
-                <!-- BACKGROUND ESTETIK (GRADASI ABU-ABU SANGAT HALUS SEPERTI MEJA STUDIO) -->
                 <div class="selection-group" style="text-align: center; border-color:#e2e8f0; background: linear-gradient(145deg, #f8fafc, #f1f5f9); padding-top: 35px; border-radius: 24px;">
                     
                     <a href="/" class="btn-reset">← Ganti Gambar (Mulai Ulang)</a>
@@ -254,7 +376,7 @@
                         <div class="ig-header">
                             <div class="ig-header-left">
                                 <div class="ig-avatar"><div class="ig-avatar-inner"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div></div>
-                                <span class="ig-username">akun_bisnis_anda</span>
+                                <span class="ig-username">{% if akun_ig_terpilih %}{{ akun_ig_terpilih.nama_akun|cut:"@" }}{% else %}akun_instagram_anda{% endif %}</span>
                             </div>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="2"></circle><circle cx="19" cy="12" r="2"></circle><circle cx="5" cy="12" r="2"></circle></svg>
                         </div>
@@ -268,7 +390,7 @@
                             {% endfor %}
                         </div>
                         
-                        <!-- Indikator Dots Muncul Di Baris Atas Sendiri -->
+                        <!-- Indikator Dots -->
                         {% if image_urls|length > 1 %}
                         <div class="ig-carousel-indicators-wrapper">
                             <div class="ig-carousel-indicators" id="ig-dots">
@@ -279,14 +401,13 @@
                         </div>
                         {% endif %}
 
-                        <!-- Action Icons (Like, Comment, Share) -->
+                        <!-- Action Icons -->
                         <div class="ig-actions">
                             <div class="ig-icons-left">
                                 <svg class="ig-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                                 <svg class="ig-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
                                 <svg class="ig-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                             </div>
-                            
                             <div>
                                 <svg class="ig-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
                             </div>
@@ -294,13 +415,30 @@
                         
                         <!-- Text / Caption -->
                         <div class="ig-likes">Disukai oleh 1.042 lainnya</div>
-                        <div class="ig-caption-box"><b>akun_bisnis_anda</b> <span id="caption-preview-text">{{ hasil_caption }}</span></div>
+                        <div class="ig-caption-box"><b>{% if akun_ig_terpilih %}{{ akun_ig_terpilih.nama_akun|cut:"@" }}{% else %}akun_instagram_anda{% endif %}</b> <span id="caption-preview-text">{{ hasil_caption }}</span></div>
                     </div>
                     
-                    <!-- Form Edit Caption dengan Label yang lebih profesional -->
+                    <!-- Form Edit Caption -->
                     <div style="text-align:left; margin-top:20px; padding: 0 10px;">
                         <label style="font-size:14px; font-weight:700; color:#334155; display:block; margin-bottom:8px;">📝 Finalisasi Teks Caption:</label>
                         <textarea name="final_caption" id="caption-editor" class="edit-caption" required>{{ hasil_caption }}</textarea>
+                    </div>
+
+                    <!-- PILIH AKUN INSTAGRAM -->
+                    <div style="text-align:left; margin-top:20px; padding: 0 10px;">
+                        <label style="font-size:14px; font-weight:700; color:#334155; display:block; margin-bottom:8px;">📸 Pilih Akun Instagram Tujuan:</label>
+                        {% if daftar_akun_ig %}
+                            <select name="ig_account_id" class="edit-caption" style="min-height:auto; padding:12px; font-weight:600;" required>
+                                <option value="" disabled selected>-- Pilih Akun Instagram --</option>
+                                {% for akun in daftar_akun_ig %}
+                                    <option value="{{ akun.id }}">{{ akun.nama_akun }} (ID: {{ akun.ig_account_id }})</option>
+                                {% endfor %}
+                            </select>
+                        {% else %}
+                            <p style="color: #ef4444; font-size: 14px; margin:0 0 10px 0;">
+                                <b>Belum ada akun Instagram terhubung.</b> Tambahkan akun terlebih dahulu di Panel Admin.
+                            </p>
+                        {% endif %}
                     </div>
 
                     <div class="action-buttons" style="padding: 0 10px;">
@@ -309,7 +447,7 @@
                             Generate Ulang
                         </button>
                         
-                        <button type="submit" name="action" value="post_ig" class="btn-ig">
+                        <button type="submit" name="action" value="post_ig" class="btn-ig" {% if not daftar_akun_ig %}disabled style="opacity:0.5; cursor:not-allowed;"{% endif %}>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
                             Terbitkan ke Instagram
                         </button>
@@ -327,7 +465,7 @@
                         {% for bidang in daftar_bidang %}
                             <label class="pill-label">
                                 <input type="radio" name="bidang" value="{{ bidang.nama }}" onchange="showForm('f-{{ bidang.id }}')" {% if request.POST.bidang == bidang.nama and not success_msg %}checked{% endif %} required>
-                                <span class="pill-text">{{ bidang.ikon }} {{ bidang.nama }}</span>
+                                <span class="pill-text">{% if bidang.ikon_gambar %}<img src="{{ bidang.ikon_gambar.url }}" alt="" style="width:16px; height:16px; object-fit:contain; margin-right:4px; vertical-align:-2px;">{% elif bidang.ikon %}{{ bidang.ikon }} {% endif %}{{ bidang.nama }}</span>
                             </label>
                         {% endfor %}
                     </div>
@@ -335,10 +473,29 @@
                     <div id="f-{{ bidang.id }}" class="dynamic-form">
                         <div class="form-title">Spesifikasi Konten: {{ bidang.nama }}</div>
                         {% for field in bidang.fields.all %}
+                        {% with nilai_tersimpan=field_values|get_item:field.name_attribute %}
                         <div class="form-group">
-                            <label>{{ field.label }}</label>
-                            <input type="text" name="{{ field.name_attribute }}" value="{% if not success_msg %}{{ field.submitted_value }}{% endif %}" placeholder="{{ field.placeholder|default:'' }}" disabled>
+                            <label>{{ field.label }}{% if field.is_required %} <span style="color:#ef4444;">*</span>{% endif %}</label>
+
+                            {% if field.tipe_field == 'textarea' %}
+                                <textarea name="{{ field.name_attribute }}" placeholder="{{ field.placeholder|default:'' }}" rows="3" {% if field.is_required %}required{% endif %} disabled>{{ nilai_tersimpan }}</textarea>
+
+                            {% elif field.tipe_field == 'select' %}
+                                <select name="{{ field.name_attribute }}" {% if field.is_required %}required{% endif %} disabled>
+                                    <option value="" {% if not nilai_tersimpan %}selected{% endif %} disabled>{{ field.placeholder|default:"-- Pilih --" }}</option>
+                                    {% for opsi in field.get_pilihan_list %}
+                                        <option value="{{ opsi }}" {% if opsi == nilai_tersimpan %}selected{% endif %}>{{ opsi }}</option>
+                                    {% endfor %}
+                                </select>
+
+                            {% elif field.tipe_field == 'date' %}
+                                <input type="date" name="{{ field.name_attribute }}" value="{{ nilai_tersimpan }}" {% if field.is_required %}required{% endif %} disabled>
+
+                            {% else %}
+                                <input type="text" name="{{ field.name_attribute }}" value="{{ nilai_tersimpan }}" placeholder="{{ field.placeholder|default:'' }}" {% if field.is_required %}required{% endif %} disabled>
+                            {% endif %}
                         </div>
+                        {% endwith %}
                         {% endfor %}
                     </div>
                     {% endfor %}
@@ -370,14 +527,41 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     
     <script>
+        // --- DROPDOWN GENERIC (dipakai untuk menu Akun Pengguna & menu Akun Instagram) ---
+        function toggleDropdown(event) {
+            event.stopPropagation();
+            const toggleBtn = event.currentTarget;
+            const panel = toggleBtn.closest('.dropdown').querySelector('.dropdown-panel');
+            const isOpen = panel.classList.contains('open');
+
+            // Tutup semua dropdown lain dulu, biar cuma 1 yang kebuka sekaligus
+            document.querySelectorAll('.dropdown-panel.open').forEach(p => p.classList.remove('open'));
+            document.querySelectorAll('.dropdown-toggle.open').forEach(t => t.classList.remove('open'));
+
+            if (!isOpen) {
+                panel.classList.add('open');
+                toggleBtn.classList.add('open');
+            }
+        }
+        document.addEventListener('click', function(event) {
+            document.querySelectorAll('.dropdown').forEach(function(menu) {
+                if (!menu.contains(event.target)) {
+                    const panel = menu.querySelector('.dropdown-panel');
+                    const toggle = menu.querySelector('.dropdown-toggle');
+                    if (panel) panel.classList.remove('open');
+                    if (toggle) toggle.classList.remove('open');
+                }
+            });
+        });
+
         // --- LOGIKA FORM DINAMIS ---
         function showForm(formId) {
             document.querySelectorAll('.dynamic-form').forEach(f => f.classList.remove('active'));
-            document.querySelectorAll('.dynamic-form input').forEach(i => i.disabled = true);
+            document.querySelectorAll('.dynamic-form input, .dynamic-form select, .dynamic-form textarea').forEach(i => i.disabled = true);
             const selectedForm = document.getElementById(formId);
             if(selectedForm) {
                 setTimeout(() => selectedForm.classList.add('active'), 50);
-                selectedForm.querySelectorAll('input').forEach(i => i.disabled = false);
+                selectedForm.querySelectorAll('input, select, textarea').forEach(i => i.disabled = false);
             }
         }
 
@@ -400,7 +584,6 @@
             if(carousel && dotsContainer) {
                 const dots = dotsContainer.querySelectorAll('.ig-dot');
                 carousel.addEventListener('scroll', function() {
-                    // Hitung indeks gambar yang sedang tampil berdasarkan posisi scroll
                     let index = Math.round(carousel.scrollLeft / carousel.clientWidth);
                     dots.forEach((dot, i) => {
                         if(i === index) {
@@ -577,20 +760,79 @@
         }
 
         document.getElementById('main-form').addEventListener('submit', function (e) {
-            const actionBtn = document.activeElement;
-            
-            if (actionBtn && actionBtn.value === 'generate') {
+            const submitter = e.submitter;
+            const actionVal = submitter ? submitter.value : '';
+
+            if (actionVal === 'generate') {
                 if (originalImages.length === 0) {
                     e.preventDefault();
                     alert("Harap pilih minimal 1 gambar terlebih dahulu.");
                     return;
                 }
-                
+
                 saveCurrentCrop();
                 hiddenCroppedInput.value = JSON.stringify(croppedImages);
                 imageInput.removeAttribute('required');
             }
+
+            // Validasi lolos (atau action selain 'generate') -- baru tampilkan
+            // overlay loading. Ditaruh PALING AKHIR supaya kalau di atas ada
+            // preventDefault() & return, overlay TIDAK ikut muncul.
+            const overlay = document.getElementById('loading-overlay');
+            const titleEl = document.getElementById('loading-title');
+            const steps = document.querySelectorAll('.loading-step');
+
+            if (actionVal === 'post_ig') {
+                titleEl.textContent = 'Sedang mengunggah ke Instagram...';
+                const postingSteps = [
+                    '📤 Mengunggah media...',
+                    '🛠️ Menyiapkan container Instagram...',
+                    '🚀 Menerbitkan postingan...',
+                    '🔎 Menunggu konfirmasi Instagram...',
+                    '✅ Menyelesaikan...'
+                ];
+                steps.forEach((el, i) => { el.textContent = postingSteps[i] || ''; });
+            } else {
+                titleEl.textContent = 'Sedang meracik caption...';
+                const generateSteps = [
+                    '📸 Menganalisis gambar...',
+                    '🧠 Memahami konteks kategori...',
+                    '✍️ Merangkai kalimat caption...',
+                    '🎨 Menyesuaikan gaya bahasa...',
+                    '✨ Menyelesaikan sentuhan akhir...'
+                ];
+                steps.forEach((el, i) => { el.textContent = generateSteps[i] || ''; });
+            }
+
+            steps.forEach(s => s.classList.remove('active'));
+            if (steps[0]) steps[0].classList.add('active');
+            overlay.classList.add('active');
+
+            // Nonaktifkan tombol biar tidak ke-klik dobel -- delay 1 tick supaya
+            // name/value tombolnya sudah pasti kebawa ke data submit duluan.
+            setTimeout(() => { if (submitter) submitter.disabled = true; }, 0);
+
+            let current = 0;
+            setInterval(() => {
+                steps[current].classList.remove('active');
+                current = (current + 1) % steps.length;
+                steps[current].classList.add('active');
+            }, 1600);
         });
     </script>
+    <!-- OVERLAY LOADING SAAT GENERATE/REGENERATE/POST -->
+    <div id="loading-overlay">
+        <div class="loading-card">
+            <div class="loading-spinner"></div>
+            <div class="loading-title" id="loading-title">Sedang memproses...</div>
+            <div class="loading-steps">
+                <div class="loading-step active" data-step="0">📸 Menganalisis gambar...</div>
+                <div class="loading-step" data-step="1">🧠 Memahami konteks kategori...</div>
+                <div class="loading-step" data-step="2">✍️ Merangkai kalimat caption...</div>
+                <div class="loading-step" data-step="3">🎨 Menyesuaikan gaya bahasa...</div>
+                <div class="loading-step" data-step="4">✨ Menyelesaikan sentuhan akhir...</div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

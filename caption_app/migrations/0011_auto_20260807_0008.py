@@ -69,7 +69,7 @@ def populate_initial_data(apps, schema_editor):
             "fields": [
                 {"label": "Nomor & Judul Regulasi", "name_attribute": "no_regulasi", "tipe_field": "text", "placeholder": "Contoh: Permen No. 12 Tahun 2026 tentang..."},
                 {"label": "Poin Kebijakan Utama", "name_attribute": "poin_kebijakan", "tipe_field": "textarea", "placeholder": "Apa perubahan/aturan baru yang berdampak ke publik?"},
-                {"label": "Tanggal Tanggal Tanggal Berlaku", "name_attribute": "tanggal_berlaku", "tipe_field": "date", "placeholder": ""},
+                {"label": "Tanggal Berlaku", "name_attribute": "tanggal_berlaku", "tipe_field": "date", "placeholder": ""},
             ]
         },
         {

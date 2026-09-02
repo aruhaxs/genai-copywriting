@@ -6,7 +6,9 @@ from dotenv import load_dotenv #Tambahan Untuk API Call
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-g&3x#_!@#$%^&*()_+-=' 
+SECRET_KEY = 'django-insecure-g&3x#_!@#$%^&*()_+-='
+
+LOGIN_REDIRECT_URL = '/admin/'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -17,6 +19,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://*.ngrok-free.dev',
     'https://*.ngrok-free.app',
     'https://*.ngrok.io',
+    'https://aigen.pythonanywhere.com',
 ]
 
 # Application definition
@@ -48,7 +51,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         # Hubungkan folder templates
-        'DIRS': [BASE_DIR / 'templates'], 
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
