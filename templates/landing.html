@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Studio & Auto Post IG — Kecamatan Mojoroto</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1; --primary-hover: #4f46e5; --secondary: #ec4899;
+            --bg-color: #f8fafc; --card-bg: #ffffff; --text-main: #0f172a;
+            --text-muted: #64748b; --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif; margin: 0; min-height: 100vh;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%); color: var(--text-main);
+            display: flex; flex-direction: column;
+        }
+
+        /* Top bar berisi brand + link Admin Login (terpisah dari CTA utama) */
+        .topbar {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 32px; flex-wrap: wrap; gap: 10px;
+        }
+        .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 17px; }
+        .brand-badge {
+            width: 36px; height: 36px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; color: white; font-size: 18px;
+        }
+        .admin-link {
+            font-size: 13px; font-weight: 600; color: var(--text-muted); text-decoration: none;
+            padding: 8px 14px; border-radius: 10px; border: 1px solid var(--border); background: white;
+            transition: all 0.2s;
+        }
+        .admin-link:hover { color: var(--text-main); border-color: #cbd5e1; box-shadow: var(--shadow-sm); }
+
+        /* Pesan (messages framework Django) */
+        .messages { max-width: 640px; margin: 0 auto; padding: 0 24px; width: 100%; }
+        .msg { padding: 12px 16px; border-radius: 12px; font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+        .msg.error { background: #fee2e2; color: #b91c1c; }
+        .msg.success { background: #dcfce7; color: #15803d; }
+        .msg.warning { background: #fef9c3; color: #a16207; }
+
+        /* Hero */
+        .hero {
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; padding: 40px 24px 60px 24px;
+        }
+        .step-indicator {
+            display: inline-block; background: #e0e7ff; color: var(--primary); padding: 6px 16px;
+            border-radius: 20px; font-size: 13px; font-weight: 700; margin-bottom: 22px;
+        }
+        h1 {
+            font-size: 42px; font-weight: 800; letter-spacing: -1px; margin: 0 0 18px 0; max-width: 700px; line-height: 1.15;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        p.subtitle { color: var(--text-muted); font-size: 16px; line-height: 1.7; max-width: 560px; margin: 0 0 36px 0; }
+
+        .cta-group { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; margin-bottom: 56px; }
+        .btn-cta {
+            padding: 16px 32px; border-radius: 14px; font-size: 15px; font-weight: 700;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.25s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%); color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4); }
+        .btn-secondary {
+            background: white; color: var(--text-main); border: 2px solid var(--border);
+        }
+        .btn-secondary:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
+
+        /* Feature cards */
+        .features {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px; max-width: 900px; width: 100%; padding: 0 24px;
+        }
+        .feature-card {
+            background: var(--card-bg); border: 1px solid var(--border); border-radius: 18px;
+            padding: 26px 22px; text-align: left; box-shadow: var(--shadow-sm);
+        }
+        .feature-icon { font-size: 26px; margin-bottom: 14px; display: block; }
+        .feature-title { font-weight: 700; font-size: 15px; margin-bottom: 6px; }
+        .feature-desc { font-size: 13.5px; color: var(--text-muted); line-height: 1.6; }
+
+        footer { text-align: center; padding: 22px; font-size: 12.5px; color: var(--text-muted); }
+
+        @media (max-width: 560px) {
+            h1 { font-size: 30px; }
+            .topbar { padding: 16px 18px; }
+            .hero { padding: 24px 18px 40px 18px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="topbar">
+        <div class="brand">
+            <div class="brand-badge"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Logo_Kota_Kediri_-_Seal_of_Kediri_City.svg/960px-Logo_Kota_Kediri_-_Seal_of_Kediri_City.svg.png" alt="" width="25px"></div>
+            AI Studio & Auto Post IG
+        </div>
+        <!-- Akses Admin dipisah total dari tombol Sign Up / Login pengguna biasa -->
+        <a class="admin-link" href="/admin/login/">Admin</a>
+    </div>
+
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <div class="msg {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="hero">
+        <span class="step-indicator">Humas Kecamatan Mojoroto, Kota Kediri</span>
+        <h1>Bikin Caption Instagram Profesional dalam Hitungan Detik</h1>
+        <p class="subtitle">
+            Platform internal untuk menyusun caption, memilih gaya bahasa, dan langsung
+            menerbitkan konten ke Instagram — semuanya dibantu AI, cepat dan konsisten
+            dengan gaya komunikasi instansi.
+        </p>
+
+        <div class="cta-group">
+            <a href="{% url 'signup' %}" class="btn-cta btn-primary">
+                Sign Up — Buat Akun
+            </a>
+            <a href="{% url 'login_user' %}" class="btn-cta btn-secondary">
+                Login
+            </a>
+        </div>
+
+        <div class="features">
+            <div class="feature-card">
+                <div class="feature-title">Caption Otomatis AI</div>
+                <div class="feature-desc">Isi detail konten, pilih gaya bahasa, dan biarkan AI menyusun caption yang siap pakai.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-title">Crop & Susun Gambar</div>
+                <div class="feature-desc">Atur rasio gambar single maupun carousel langsung dari browser sebelum diunggah.</div>
+            </div>
+            <div class="feature-card">
+                <div class="feature-title">Terbit Langsung ke IG</div>
+                <div class="feature-desc">Setelah caption disetujui, publikasikan langsung ke akun Instagram resmi.</div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        © {% now "Y" %} AI Studio & Auto Post IG — Kecamatan Mojoroto, Kota Kediri.
+    </footer>
+
+</body>
+</html>
